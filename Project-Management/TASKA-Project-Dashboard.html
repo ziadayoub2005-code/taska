@@ -1,0 +1,963 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>TASKA — Project Management & Engineering Dashboard</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --primary: #2563EB;
+      --primary-dark: #1D4ED8;
+      --primary-light: #EFF6FF;
+      --bg-base: #F8FAFC;
+      --card-bg: #FFFFFF;
+      --text-main: #0F172A;
+      --text-muted: #64748B;
+      --border: #E2E8F0;
+      --border-focus: #94A3B8;
+      --radius: 12px;
+      --radius-sm: 8px;
+      --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+      --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.07), 0 2px 4px -2px rgba(0, 0, 0, 0.05);
+      --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.08), 0 4px 6px -4px rgba(0, 0, 0, 0.04);
+      --color-done: #10B981;
+      --color-qa: #8B5CF6;
+      --color-progress: #F59E0B;
+      --color-todo: #3B82F6;
+      --color-backlog: #64748B;
+      --color-critical: #EF4444;
+      --color-high: #F97316;
+      --color-medium: #EAB308;
+      --color-low: #10B981;
+    }
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+    body {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      background: var(--bg-base);
+      color: var(--text-main);
+      line-height: 1.5;
+      min-height: 100vh;
+    }
+    header {
+      background: #FFFFFF;
+      border-bottom: 1px solid var(--border);
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+    .header-inner {
+      max-width: 1400px;
+      margin: 0 auto;
+      padding: 16px 24px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 16px;
+    }
+    .header-brand {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+    }
+    .brand-icon {
+      width: 40px;
+      height: 40px;
+      background: linear-gradient(135deg, #2563EB 0%, #4F46E5 100%);
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #fff;
+      font-weight: 800;
+      font-size: 20px;
+      box-shadow: 0 4px 10px rgba(37, 99, 235, 0.3);
+    }
+    .brand-text h1 {
+      font-size: 20px;
+      font-weight: 800;
+      color: var(--text-main);
+      letter-spacing: -0.02em;
+    }
+    .brand-text p {
+      font-size: 13px;
+      color: var(--text-muted);
+    }
+    .header-links {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 8px 16px;
+      border-radius: var(--radius-sm);
+      font-size: 13px;
+      font-weight: 600;
+      text-decoration: none;
+      cursor: pointer;
+      border: 1px solid transparent;
+      transition: all 0.15s ease;
+    }
+    .btn-primary {
+      background: var(--primary);
+      color: #fff;
+    }
+    .btn-primary:hover {
+      background: var(--primary-dark);
+    }
+    .btn-outline {
+      background: #fff;
+      color: var(--text-main);
+      border-color: var(--border);
+    }
+    .btn-outline:hover {
+      background: #F1F5F9;
+    }
+    .container {
+      max-width: 1400px;
+      margin: 0 auto;
+      padding: 24px;
+      display: flex;
+      flex-direction: column;
+      gap: 28px;
+    }
+
+    /* Section Header */
+    .section-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 14px;
+    }
+    .section-title {
+      font-size: 16px;
+      font-weight: 700;
+      color: var(--text-main);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .section-title svg {
+      color: var(--primary);
+    }
+
+    /* Stat Cards */
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 16px;
+    }
+    .stat-card {
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 18px 20px;
+      box-shadow: var(--shadow-sm);
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+      position: relative;
+      overflow: hidden;
+    }
+    .stat-card::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 4px;
+    }
+    .stat-card.total::before { background: #2563EB; }
+    .stat-card.done::before { background: var(--color-done); }
+    .stat-card.qa::before { background: var(--color-qa); }
+    .stat-card.progress::before { background: var(--color-progress); }
+    .stat-card.todo::before { background: var(--color-todo); }
+    .stat-card.backlog::before { background: var(--color-backlog); }
+
+    .stat-label {
+      font-size: 12px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: var(--text-muted);
+    }
+    .stat-value {
+      font-size: 28px;
+      font-weight: 800;
+      color: var(--text-main);
+      display: flex;
+      align-items: baseline;
+      gap: 8px;
+    }
+    .stat-sub {
+      font-size: 12px;
+      font-weight: 500;
+      color: var(--text-muted);
+    }
+
+    /* Distribution Row */
+    .dist-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 20px;
+    }
+    @media (max-width: 900px) {
+      .dist-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+    .panel {
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 20px;
+      box-shadow: var(--shadow-sm);
+    }
+    .panel-title {
+      font-size: 15px;
+      font-weight: 700;
+      margin-bottom: 16px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .dist-bar-wrapper {
+      display: flex;
+      height: 16px;
+      border-radius: 8px;
+      overflow: hidden;
+      margin-bottom: 16px;
+      background: #E2E8F0;
+    }
+    .dist-segment {
+      height: 100%;
+      transition: width 0.3s ease;
+    }
+    .dist-legend {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+    }
+    .legend-item {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      font-size: 13px;
+      padding: 8px 12px;
+      background: #F8FAFC;
+      border-radius: 6px;
+      border: 1px solid #F1F5F9;
+    }
+    .legend-info {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .legend-dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+    }
+
+    /* Epics Section */
+    .epics-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(420px, 1fr));
+      gap: 16px;
+    }
+    @media (max-width: 500px) {
+      .epics-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+    .epic-card {
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 18px;
+      box-shadow: var(--shadow-sm);
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      transition: box-shadow 0.2s;
+    }
+    .epic-card:hover {
+      box-shadow: var(--shadow);
+    }
+    .epic-card-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      gap: 12px;
+    }
+    .epic-badge {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 11px;
+      font-weight: 700;
+      padding: 3px 8px;
+      border-radius: 4px;
+      color: #fff;
+    }
+    .epic-title {
+      font-size: 14.5px;
+      font-weight: 700;
+      color: var(--text-main);
+      line-height: 1.35;
+    }
+    .epic-desc {
+      font-size: 12.5px;
+      color: var(--text-muted);
+      line-height: 1.45;
+    }
+    .epic-progress-bar {
+      height: 8px;
+      background: #F1F5F9;
+      border-radius: 4px;
+      overflow: hidden;
+      display: flex;
+    }
+    .epic-progress-fill {
+      background: var(--color-done);
+      height: 100%;
+    }
+    .epic-meta {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 12px;
+      color: var(--text-muted);
+      padding-top: 8px;
+      border-top: 1px solid #F1F5F9;
+    }
+    .epic-module-tag {
+      background: #F1F5F9;
+      padding: 2px 6px;
+      border-radius: 4px;
+      font-size: 11px;
+      font-family: 'JetBrains Mono', monospace;
+    }
+
+    /* Kanban Section */
+    .kanban-board {
+      display: grid;
+      grid-template-columns: repeat(5, 1fr);
+      gap: 14px;
+      overflow-x: auto;
+      padding-bottom: 8px;
+    }
+    @media (max-width: 1200px) {
+      .kanban-board {
+        grid-template-columns: repeat(5, 280px);
+      }
+    }
+    .kanban-col {
+      background: #F1F5F9;
+      border-radius: var(--radius);
+      padding: 12px;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      min-height: 250px;
+    }
+    .kanban-col-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 4px 6px;
+      font-size: 13px;
+      font-weight: 700;
+      color: var(--text-main);
+    }
+    .kanban-badge {
+      background: #E2E8F0;
+      padding: 2px 8px;
+      border-radius: 10px;
+      font-size: 11px;
+    }
+    .kanban-card {
+      background: #FFFFFF;
+      border-radius: 8px;
+      padding: 10px 12px;
+      box-shadow: var(--shadow-sm);
+      border: 1px solid var(--border);
+      font-size: 12.5px;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+    .kanban-card-key {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 11px;
+      font-weight: 700;
+      color: var(--primary);
+    }
+    .kanban-card-title {
+      font-weight: 600;
+      color: var(--text-main);
+      line-height: 1.3;
+    }
+    .kanban-card-meta {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-top: 4px;
+      padding-top: 6px;
+      border-top: 1px solid #F8FAFC;
+    }
+
+    /* Table Section */
+    .table-container {
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow-sm);
+      overflow: hidden;
+    }
+    .table-controls {
+      padding: 16px 20px;
+      display: flex;
+      gap: 12px;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+      border-bottom: 1px solid var(--border);
+    }
+    .search-box {
+      position: relative;
+      flex: 1;
+      min-width: 250px;
+    }
+    .search-box input {
+      width: 100%;
+      padding: 8px 12px 8px 36px;
+      border-radius: 6px;
+      border: 1px solid var(--border);
+      font-size: 13px;
+      outline: none;
+    }
+    .search-box input:focus {
+      border-color: var(--primary);
+      box-shadow: 0 0 0 2px rgba(37, 99, 235, 0.1);
+    }
+    .search-box svg {
+      position: absolute;
+      left: 10px;
+      top: 50%;
+      transform: translateY(-50%);
+      color: var(--text-muted);
+    }
+    .filter-select {
+      padding: 8px 12px;
+      border-radius: 6px;
+      border: 1px solid var(--border);
+      font-size: 13px;
+      background: #fff;
+      color: var(--text-main);
+      outline: none;
+      cursor: pointer;
+    }
+    .data-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 13px;
+      text-align: left;
+    }
+    .data-table th {
+      background: #F8FAFC;
+      padding: 12px 16px;
+      font-weight: 600;
+      color: var(--text-muted);
+      border-bottom: 1px solid var(--border);
+      text-transform: uppercase;
+      font-size: 11px;
+      letter-spacing: 0.05em;
+    }
+    .data-table td {
+      padding: 12px 16px;
+      border-bottom: 1px solid var(--border);
+      vertical-align: top;
+    }
+    .data-table tr:hover td {
+      background: #F8FAFC;
+    }
+    .task-key {
+      font-family: 'JetBrains Mono', monospace;
+      font-weight: 700;
+      color: var(--primary);
+      white-space: nowrap;
+    }
+    .badge {
+      display: inline-block;
+      padding: 2px 8px;
+      border-radius: 4px;
+      font-size: 11px;
+      font-weight: 600;
+      text-transform: capitalize;
+    }
+    .badge-status-done { background: #D1FAE5; color: #065F46; }
+    .badge-status-qa { background: #EDE9FE; color: #5B21B6; }
+    .badge-status-progress { background: #FEF3C7; color: #92400E; }
+    .badge-status-todo { background: #DBEAFE; color: #1E40AF; }
+    .badge-status-backlog { background: #F1F5F9; color: #475569; }
+
+    .badge-priority-critical { background: #FEE2E2; color: #991B1B; }
+    .badge-priority-high { background: #FFEDD5; color: #9A3412; }
+    .badge-priority-medium { background: #FEF9C3; color: #854D0E; }
+    .badge-priority-low { background: #DCFCE7; color: #166534; }
+
+    /* Footer */
+    footer {
+      margin-top: 40px;
+      padding: 24px;
+      text-align: center;
+      font-size: 13px;
+      color: var(--text-muted);
+      border-top: 1px solid var(--border);
+      background: #FFFFFF;
+    }
+  </style>
+</head>
+<body>
+
+  <header>
+    <div class="header-inner">
+      <div class="header-brand">
+        <div class="brand-icon">T</div>
+        <div class="brand-text">
+          <h1>TASKA — Project Management & Engineering Dashboard</h1>
+          <p>Intelligent Compound Maintenance & Home Services Platform · Sprint Cadence: 2-Week Sprints</p>
+        </div>
+      </div>
+      <div class="header-links">
+        <a href="Trello/TASKA-Trello-Board.html" class="btn btn-primary">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><rect x="7" y="7" width="3" height="9"></rect><rect x="14" y="7" width="3" height="5"></rect></svg>
+          Open Trello Board
+        </a>
+        <a href="PROJECT-MANAGEMENT.md" class="btn btn-outline">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg>
+          Documentation (MD)
+        </a>
+      </div>
+    </div>
+  </header>
+
+  <div class="container">
+
+    <!-- KPI Metric Cards -->
+    <section>
+      <div class="stats-grid">
+        <div class="stat-card total">
+          <span class="stat-label">Total Engineering Tasks</span>
+          <span class="stat-value">28 <span class="stat-sub">10 Epics</span></span>
+        </div>
+        <div class="stat-card done">
+          <span class="stat-label">Completed & Verified (Done)</span>
+          <span class="stat-value">21 <span class="stat-sub">75.0%</span></span>
+        </div>
+        <div class="stat-card qa">
+          <span class="stat-label">Testing / QA Review</span>
+          <span class="stat-value">3 <span class="stat-sub">10.7%</span></span>
+        </div>
+        <div class="stat-card progress">
+          <span class="stat-label">Actively In Progress</span>
+          <span class="stat-value">1 <span class="stat-sub">3.6%</span></span>
+        </div>
+        <div class="stat-card todo">
+          <span class="stat-label">Scheduled (To Do)</span>
+          <span class="stat-value">1 <span class="stat-sub">3.6%</span></span>
+        </div>
+        <div class="stat-card backlog">
+          <span class="stat-label">Future Backlog</span>
+          <span class="stat-value">2 <span class="stat-sub">7.1%</span></span>
+        </div>
+      </div>
+    </section>
+
+    <!-- Distributions Grid -->
+    <section class="dist-grid">
+      <!-- Status Distribution -->
+      <div class="panel">
+        <div class="panel-title">
+          <span>Status Distribution</span>
+          <span style="font-size:12px; font-weight:500; color:var(--text-muted);">Source: tasks.csv</span>
+        </div>
+        <div class="dist-bar-wrapper">
+          <div class="dist-segment" style="width: 75.0%; background: var(--color-done);" title="Done: 21 (75%)"></div>
+          <div class="dist-segment" style="width: 10.7%; background: var(--color-qa);" title="Testing / QA: 3 (10.7%)"></div>
+          <div class="dist-segment" style="width: 3.6%; background: var(--color-progress);" title="In Progress: 1 (3.6%)"></div>
+          <div class="dist-segment" style="width: 3.6%; background: var(--color-todo);" title="To Do: 1 (3.6%)"></div>
+          <div class="dist-segment" style="width: 7.1%; background: var(--color-backlog);" title="Backlog: 2 (7.1%)"></div>
+        </div>
+        <div class="dist-legend">
+          <div class="legend-item">
+            <div class="legend-info">
+              <span class="legend-dot" style="background:var(--color-done)"></span>
+              <span>Done</span>
+            </div>
+            <strong>21 (75.0%)</strong>
+          </div>
+          <div class="legend-item">
+            <div class="legend-info">
+              <span class="legend-dot" style="background:var(--color-qa)"></span>
+              <span>Testing / QA</span>
+            </div>
+            <strong>3 (10.7%)</strong>
+          </div>
+          <div class="legend-item">
+            <div class="legend-info">
+              <span class="legend-dot" style="background:var(--color-progress)"></span>
+              <span>In Progress</span>
+            </div>
+            <strong>1 (3.6%)</strong>
+          </div>
+          <div class="legend-item">
+            <div class="legend-info">
+              <span class="legend-dot" style="background:var(--color-todo)"></span>
+              <span>To Do</span>
+            </div>
+            <strong>1 (3.6%)</strong>
+          </div>
+          <div class="legend-item" style="grid-column: span 2;">
+            <div class="legend-info">
+              <span class="legend-dot" style="background:var(--color-backlog)"></span>
+              <span>Backlog</span>
+            </div>
+            <strong>2 (7.1%)</strong>
+          </div>
+        </div>
+      </div>
+
+      <!-- Priority Distribution -->
+      <div class="panel">
+        <div class="panel-title">
+          <span>Priority Distribution</span>
+          <span style="font-size:12px; font-weight:500; color:var(--text-muted);">28 Total Tasks</span>
+        </div>
+        <div class="dist-bar-wrapper">
+          <div class="dist-segment" style="width: 32.1%; background: var(--color-critical);" title="Critical: 9 (32.1%)"></div>
+          <div class="dist-segment" style="width: 42.9%; background: var(--color-high);" title="High: 12 (42.9%)"></div>
+          <div class="dist-segment" style="width: 17.9%; background: var(--color-medium);" title="Medium: 5 (17.9%)"></div>
+          <div class="dist-segment" style="width: 7.1%; background: var(--color-low);" title="Low: 2 (7.1%)"></div>
+        </div>
+        <div class="dist-legend">
+          <div class="legend-item">
+            <div class="legend-info">
+              <span class="legend-dot" style="background:var(--color-critical)"></span>
+              <span>Critical</span>
+            </div>
+            <strong>9 (32.1%)</strong>
+          </div>
+          <div class="legend-item">
+            <div class="legend-info">
+              <span class="legend-dot" style="background:var(--color-high)"></span>
+              <span>High</span>
+            </div>
+            <strong>12 (42.9%)</strong>
+          </div>
+          <div class="legend-item">
+            <div class="legend-info">
+              <span class="legend-dot" style="background:var(--color-medium)"></span>
+              <span>Medium</span>
+            </div>
+            <strong>5 (17.9%)</strong>
+          </div>
+          <div class="legend-item">
+            <div class="legend-info">
+              <span class="legend-dot" style="background:var(--color-low)"></span>
+              <span>Low</span>
+            </div>
+            <strong>2 (7.1%)</strong>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Epics Overview Section -->
+    <section>
+      <div class="section-header">
+        <h2 class="section-title">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="12 2 2 7 12 12 22 7 12 2"></polygon><polyline points="2 17 12 22 22 17"></polyline><polyline points="2 12 12 17 22 12"></polyline></svg>
+          Epics Overview (10 Engineering Epics)
+        </h2>
+      </div>
+      <div class="epics-grid" id="epicsContainer">
+        <!-- Rendered by JavaScript -->
+      </div>
+    </section>
+
+    <!-- Kanban Dispatch Board -->
+    <section>
+      <div class="section-header">
+        <h2 class="section-title">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><line x1="9" y1="3" x2="9" y2="21"></line><line x1="15" y1="3" x2="15" y2="21"></line></svg>
+          Live Kanban Dispatch Board
+        </h2>
+        <span style="font-size:13px; color:var(--text-muted);">Backlog ➔ To Do ➔ In Progress ➔ Testing / QA ➔ Done</span>
+      </div>
+      <div class="kanban-board">
+        <div class="kanban-col">
+          <div class="kanban-col-header">
+            <span>Backlog</span>
+            <span class="kanban-badge" id="kb-count-Backlog">2</span>
+          </div>
+          <div id="kb-Backlog" style="display:flex; flex-direction:column; gap:8px;"></div>
+        </div>
+        <div class="kanban-col">
+          <div class="kanban-col-header">
+            <span>To Do</span>
+            <span class="kanban-badge" id="kb-count-To-Do">1</span>
+          </div>
+          <div id="kb-To-Do" style="display:flex; flex-direction:column; gap:8px;"></div>
+        </div>
+        <div class="kanban-col">
+          <div class="kanban-col-header">
+            <span>In Progress</span>
+            <span class="kanban-badge" id="kb-count-In-Progress">1</span>
+          </div>
+          <div id="kb-In-Progress" style="display:flex; flex-direction:column; gap:8px;"></div>
+        </div>
+        <div class="kanban-col">
+          <div class="kanban-col-header">
+            <span>Testing / QA</span>
+            <span class="kanban-badge" id="kb-count-Testing-QA">3</span>
+          </div>
+          <div id="kb-Testing-QA" style="display:flex; flex-direction:column; gap:8px;"></div>
+        </div>
+        <div class="kanban-col">
+          <div class="kanban-col-header">
+            <span>Done</span>
+            <span class="kanban-badge" id="kb-count-Done">21</span>
+          </div>
+          <div id="kb-Done" style="display:flex; flex-direction:column; gap:8px;"></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Complete Task Matrix Table -->
+    <section>
+      <div class="section-header">
+        <h2 class="section-title">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="8" y1="6" x2="21" y2="6"></line><line x1="8" y1="12" x2="21" y2="12"></line><line x1="8" y1="18" x2="21" y2="18"></line><line x1="3" y1="6" x2="3.01" y2="6"></line><line x1="3" y1="12" x2="3.01" y2="12"></line><line x1="3" y1="18" x2="3.01" y2="18"></line></svg>
+          Complete Work Breakdown Matrix (28 Tasks)
+        </h2>
+      </div>
+
+      <div class="table-container">
+        <div class="table-controls">
+          <div class="search-box">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+            <input type="text" id="tableSearch" placeholder="Filter tasks by key, title, acceptance criteria...">
+          </div>
+          <div style="display:flex; gap:10px;">
+            <select id="tableEpicFilter" class="filter-select">
+              <option value="ALL">All Epics</option>
+              <option value="EPC-01">EPC-01</option>
+              <option value="EPC-02">EPC-02</option>
+              <option value="EPC-03">EPC-03</option>
+              <option value="EPC-04">EPC-04</option>
+              <option value="EPC-05">EPC-05</option>
+              <option value="EPC-06">EPC-06</option>
+              <option value="EPC-07">EPC-07</option>
+              <option value="EPC-08">EPC-08</option>
+              <option value="EPC-09">EPC-09</option>
+              <option value="EPC-10">EPC-10</option>
+            </select>
+            <select id="tableStatusFilter" class="filter-select">
+              <option value="ALL">All Statuses</option>
+              <option value="Done">Done (21)</option>
+              <option value="Testing / QA">Testing / QA (3)</option>
+              <option value="In Progress">In Progress (1)</option>
+              <option value="To Do">To Do (1)</option>
+              <option value="Backlog">Backlog (2)</option>
+            </select>
+            <select id="tablePriorityFilter" class="filter-select">
+              <option value="ALL">All Priorities</option>
+              <option value="Critical">Critical (9)</option>
+              <option value="High">High (12)</option>
+              <option value="Medium">Medium (5)</option>
+              <option value="Low">Low (2)</option>
+            </select>
+          </div>
+        </div>
+
+        <div style="overflow-x:auto;">
+          <table class="data-table">
+            <thead>
+              <tr>
+                <th>Key</th>
+                <th>Task Summary</th>
+                <th>Epic</th>
+                <th>Module / Subsystem</th>
+                <th>Priority</th>
+                <th>Status</th>
+                <th>Dependencies</th>
+                <th>Acceptance Criteria</th>
+              </tr>
+            </thead>
+            <tbody id="taskTableBody">
+              <!-- Rendered by JavaScript -->
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+  </div>
+
+  <footer>
+    <p><strong>TASKA Project Management Suite</strong> · Generated from source specifications (<code>tasks.csv</code> &amp; <code>Trello-Jira-Backlog.md</code>)</p>
+    <p style="margin-top:4px; font-size:12px;">ASP.NET Core 8 Web API · EF Core · SignalR · React 18/19 PWA</p>
+  </footer>
+
+  <script>
+    const tasks = [{"Issue Key": "TSK-101", "Summary": "Resident Registration with Compound Code Validation", "Description": "Implement resident registration requiring Compound Code apartment and phone with 6-digit email OTP generation", "Epic": "EPC-01", "Module": "taska-api / taska-resident", "Priority": "Critical", "Status": "Done", "Acceptance Criteria": "Validates compound code; generates 6-digit OTP; sends OTPMail; returns 201 Created", "Dependencies": "None"}, {"Issue Key": "TSK-102", "Summary": "Email OTP Verification & JWT Bearer Token Issuance", "Description": "Provide 6-digit OTP verification endpoint and client screen returning ASP.NET Core JWT token", "Epic": "EPC-01", "Module": "taska-api / taska-resident", "Priority": "Critical", "Status": "Done", "Acceptance Criteria": "Validates OTP expiration; clears OTP fields; issues JWT Bearer token", "Dependencies": "TSK-101"}, {"Issue Key": "TSK-103", "Summary": "Role-Based JWT Bearer Authentication Architecture", "Description": "Configure ASP.NET Core JWT Bearer authentication with distinct claims and policies for Residents and Technicians", "Epic": "EPC-01", "Module": "taska-api", "Priority": "Critical", "Status": "Done", "Acceptance Criteria": "Enforces [Authorize(Roles = \"...\")] policies; returns 401/403 on unauthorized access", "Dependencies": "None"}, {"Issue Key": "TSK-104", "Summary": "Technician Multi-Identifier Login", "Description": "Allow technicians to login via either registered phone number or email with password", "Epic": "EPC-01", "Module": "taska-api / taska-technician", "Priority": "High", "Status": "Done", "Acceptance Criteria": "Validates phone or email against database; issues technician JWT token", "Dependencies": "TSK-103"}, {"Issue Key": "TSK-201", "Summary": "Residential Compound Database Schema & Management CRUD", "Description": "Create compounds table and admin interface to manage gated community entities", "Epic": "EPC-02", "Module": "taska-api / admin-react", "Priority": "High", "Status": "Done", "Acceptance Criteria": "Enforces unique compound code; provides full CRUD operations in admin", "Dependencies": "None"}, {"Issue Key": "TSK-202", "Summary": "Service Categories Catalog & Dynamic Base Pricing", "Description": "Implement service_categories table with base pricing icons and sort order", "Epic": "EPC-02", "Module": "taska-api / admin-react", "Priority": "High", "Status": "Done", "Acceptance Criteria": "Returns categories ordered by sort_order; allows admin to modify base price and icon", "Dependencies": "None"}, {"Issue Key": "TSK-301", "Summary": "Maintenance Request Submission with Photo Upload & Geolocation", "Description": "Allow residents to submit maintenance requests with images coordinates and urgency", "Epic": "EPC-03", "Module": "taska-api / taska-resident", "Priority": "Critical", "Status": "Done", "Acceptance Criteria": "Enforces single active order policy; saves image to public/orders; emits NewOrderEvent over SignalR", "Dependencies": "TSK-102|TSK-202"}, {"Issue Key": "TSK-302", "Summary": "Technician Reverse Bidding Marketplace", "Description": "Allow online compound technicians to place monetary bids with notes on pending orders", "Epic": "EPC-03", "Module": "taska-api / taska-technician", "Priority": "Critical", "Status": "Done", "Acceptance Criteria": "Enforces unique technician bid per order; emits NewBidEvent over SignalR to resident", "Dependencies": "TSK-301"}, {"Issue Key": "TSK-303", "Summary": "Bid Acceptance & Automatic Competitor Dismissal", "Description": "Resident accepts a technician bid updating order status to accepted and rejecting other bids", "Epic": "EPC-03", "Module": "taska-api / taska-resident", "Priority": "Critical", "Status": "Done", "Acceptance Criteria": "Atomic EF Core transaction updates order price and technician; marks other bids rejected; emits OrderAcceptedEvent", "Dependencies": "TSK-302"}, {"Issue Key": "TSK-304", "Summary": "Order Cancellation Flow with Audit Trail", "Description": "Enable residents to cancel orders with recorded cancellation reason in status history", "Epic": "EPC-03", "Module": "taska-api / taska-resident", "Priority": "Medium", "Status": "Testing / QA", "Acceptance Criteria": "Validates cancellable state; logs cancellation reason; notifies technician over SignalR", "Dependencies": "TSK-301"}, {"Issue Key": "TSK-401", "Summary": "Technician Online/Offline Duty Status Toggle", "Description": "Implement duty status switch to control technician dispatch availability", "Epic": "EPC-04", "Module": "taska-api / taska-technician", "Priority": "High", "Status": "Done", "Acceptance Criteria": "Toggles status between online and offline; filters compound broadcast recipients", "Dependencies": "TSK-104"}, {"Issue Key": "TSK-402", "Summary": "Background GPS Geolocation Tracking & Movement Logging", "Description": "Stream technician GPS coordinates via watchPosition and log movement to database", "Epic": "EPC-04", "Module": "taska-api / taska-technician", "Priority": "Critical", "Status": "Done", "Acceptance Criteria": "Updates technician coordinates; records movement log; broadcasts LocationUpdated over SignalR", "Dependencies": "TSK-401"}, {"Issue Key": "TSK-403", "Summary": "Sequential Job Execution State Machine", "Description": "Enforce order state transitions (accepted to arrived to in_progress to completed)", "Epic": "EPC-04", "Module": "taska-api / taska-technician", "Priority": "Critical", "Status": "Done", "Acceptance Criteria": "Validates state machine transitions; logs timestamps; generates pending payment", "Dependencies": "TSK-303"}, {"Issue Key": "TSK-501", "Summary": "ASP.NET Core SignalR Real-Time Hubs Setup & JWT Authorization", "Description": "Configure SignalR Hubs (OrderHub LocationHub SupportHub) with JWT Bearer query token authorization", "Epic": "EPC-05", "Module": "taska-api", "Priority": "Critical", "Status": "Done", "Acceptance Criteria": "Initializes SignalR endpoints; verifies JWT Bearer token on connection handshakes; manages client groups", "Dependencies": "None"}, {"Issue Key": "TSK-502", "Summary": "In-Order Live Chat between Resident and Technician", "Description": "Provide real-time messaging interface within active orders via SignalR OrderHub", "Epic": "EPC-05", "Module": "taska-api / taska-resident / taska-technician", "Priority": "High", "Status": "Done", "Acceptance Criteria": "Restricts messaging to order participants; broadcasts ChatMessage over SignalR", "Dependencies": "TSK-501"}, {"Issue Key": "TSK-601", "Summary": "Automated Invoice Generation & Payment Simulation", "Description": "Generate payment records on completion and support Cash and Visa payment flows", "Epic": "EPC-06", "Module": "taska-api / taska-resident / admin-react", "Priority": "High", "Status": "In Progress", "Acceptance Criteria": "Generates transaction IDs; handles simulated payment success and failure; supports admin refund", "Dependencies": "TSK-403"}, {"Issue Key": "TSK-602", "Summary": "Customer Satisfaction 5-Star Rating & Review Engine", "Description": "Allow residents to submit 1-5 star ratings and recalculate technician overall average", "Epic": "EPC-06", "Module": "taska-api / taska-resident / admin-react", "Priority": "Medium", "Status": "Done", "Acceptance Criteria": "Enforces 1-5 star range; recalculates technician average rating; prevents duplicate rating", "Dependencies": "TSK-601"}, {"Issue Key": "TSK-701", "Summary": "Executive KPI Operations Dashboard", "Description": "Build administrative dashboard showing real-time counters and Recharts analytics", "Epic": "EPC-07", "Module": "admin-react / taska-api", "Priority": "High", "Status": "Done", "Acceptance Criteria": "Displays stats cards; listens to WebSocket status events; renders revenue and status charts", "Dependencies": "None"}, {"Issue Key": "TSK-702", "Summary": "Real-Time Drag-and-Drop Orders Kanban Board", "Description": "Implement live Kanban dispatch board with status lanes and card detail inspection", "Epic": "EPC-07", "Module": "admin-react", "Priority": "High", "Status": "Testing / QA", "Acceptance Criteria": "Columns update live over ASP.NET Core SignalR; supports drag-and-drop state transition", "Dependencies": "TSK-701|TSK-501"}, {"Issue Key": "TSK-703", "Summary": "Technician & Resident Directory Management", "Description": "Provide administration tables to manage technicians and residents across compounds", "Epic": "EPC-07", "Module": "admin-react / taska-api", "Priority": "Medium", "Status": "Done", "Acceptance Criteria": "Supports search and compound filter; allows technician creation and deletion", "Dependencies": "None"}, {"Issue Key": "TSK-801", "Summary": "Resident Support Widget & Ticket Creation", "Description": "Implement floating support chat widget with single open ticket constraint", "Epic": "EPC-08", "Module": "taska-resident / taska-api", "Priority": "High", "Status": "Done", "Acceptance Criteria": "Enforces single active ticket per resident; broadcasts TicketCreated over SupportHub", "Dependencies": "TSK-102"}, {"Issue Key": "TSK-802", "Summary": "Admin Helpdesk Dispatch Desk & Ticket Resolution", "Description": "Administrative interface to respond to support tickets and close cases", "Epic": "EPC-08", "Module": "admin-react / taska-api", "Priority": "High", "Status": "Testing / QA", "Acceptance Criteria": "Real-time two-way messaging on SupportHub; resolution rating prompt", "Dependencies": "TSK-801"}, {"Issue Key": "TSK-901", "Summary": "Database-Driven Translation Schema & Public API", "Description": "Store translation key-values in MySQL and serve via public API endpoint", "Epic": "EPC-09", "Module": "taska-api", "Priority": "High", "Status": "Done", "Acceptance Criteria": "Enforces unique key per language; serves translation JSON dictionary", "Dependencies": "None"}, {"Issue Key": "TSK-902", "Summary": "Client Bilingual Context & RTL Layout Engine", "Description": "Support English and Arabic switching with automatic RTL layout mirroring", "Epic": "EPC-09", "Module": "taska-resident / taska-technician / admin-react", "Priority": "High", "Status": "Done", "Acceptance Criteria": "Toggles dir attribute between ltr and rtl; persists language selection", "Dependencies": "TSK-901"}, {"Issue Key": "TSK-903", "Summary": "Automated Translation Key Seeder & Machine Sync", "Description": "Tooling to automatically discover untranslated keys in frontend and seed database", "Epic": "EPC-09", "Module": "taska-api", "Priority": "Low", "Status": "To Do", "Acceptance Criteria": "Parses frontend codebase for translation keys and creates database records", "Dependencies": "TSK-901"}, {"Issue Key": "TSK-1001", "Summary": "Client Health Check & Automatic Offline Sandbox Mode", "Description": "Detect API availability and fall back to localStorage mock sandbox when offline", "Epic": "EPC-10", "Module": "taska-resident / taska-technician", "Priority": "Medium", "Status": "Done", "Acceptance Criteria": "Pings categories endpoint; falls back to sandbox.ts without crashing", "Dependencies": "None"}, {"Issue Key": "TSK-1101", "Summary": "Voice Message Notes in Order Chat", "Description": "Enable audio voice clip recording and playback in resident-technician chat", "Epic": "EPC-05", "Module": "taska-api / All Clients", "Priority": "Low", "Status": "Backlog", "Acceptance Criteria": "Audio recording via MediaRecorder API; storage in S3/local static disk", "Dependencies": "TSK-502"}, {"Issue Key": "TSK-1102", "Summary": "Compound Security Gate Pass QR Code Generator", "Description": "Generate digital entry QR code for assigned technician at compound gate", "Epic": "EPC-04", "Module": "taska-api / taska-technician", "Priority": "Medium", "Status": "Backlog", "Acceptance Criteria": "Generates time-limited QR code linked to order for compound gate security scanner", "Dependencies": "TSK-403"}];
+    const epics = {"EPC-01": {"name": "Role-Based JWT Bearer Authentication & Verification", "module": "taska-api / taska-resident / taska-technician", "priority": "Critical", "description": "Compound-verified resident registration, 6-digit email OTP verification, technician credentials validation, and role-based JWT Bearer authorization.", "color": "#EF4444"}, "EPC-02": {"name": "Compound & Service Catalog Infrastructure", "module": "taska-api / admin-react", "priority": "High", "description": "EF Core 8 relational entities, gated residential compound records, service categories catalog, dynamic base pricing, and icon assignments.", "color": "#F97316"}, "EPC-03": {"name": "Resident Order Creation & Bidding Marketplace", "module": "taska-api / taska-resident / taska-technician", "priority": "Critical", "description": "Maintenance request creation with photo upload & geolocation, technician reverse bidding marketplace, and atomic bid acceptance.", "color": "#EAB308"}, "EPC-04": {"name": "Technician Operations & Live GPS Tracking", "module": "taska-api / taska-technician", "priority": "Critical", "description": "Online/offline duty status toggle, background GPS tracking with movement breadcrumb logging, and sequential order state machine.", "color": "#10B981"}, "EPC-05": {"name": "Real-Time SignalR Hubs Infrastructure", "module": "taska-api / All Clients", "priority": "Critical", "description": "ASP.NET Core SignalR real-time hubs (OrderHub, LocationHub, SupportHub, CompoundHub) with JWT Bearer handshake authorization.", "color": "#06B6D4"}, "EPC-06": {"name": "Billing, Simulated Payments & Rating Engine", "module": "taska-api / taska-resident / admin-react", "priority": "High", "description": "Automated invoice generation, Cash and Visa simulated payment processing, and customer satisfaction 5-star rating aggregation engine.", "color": "#3B82F6"}, "EPC-07": {"name": "Admin Operations Console & Kanban Dispatch", "module": "admin-react / taska-api", "priority": "High", "description": "Executive KPI operations dashboard with Recharts analytics, real-time drag-and-drop orders Kanban dispatch board, and user directories.", "color": "#8B5CF6"}, "EPC-08": {"name": "In-App Customer Support Helpdesk", "module": "taska-resident / admin-react / taska-api", "priority": "High", "description": "Floating in-app resident customer support widget, single active ticket constraint, and administrative two-way helpdesk dispatch desk.", "color": "#EC4899"}, "EPC-09": {"name": "Dynamic Bilingual Localization (EN/AR)", "module": "taska-api / All Clients", "priority": "High", "description": "Database-driven MySQL key-value translations schema, client bilingual context with automatic RTL layout mirroring, and translation key sync.", "color": "#14B8A6"}, "EPC-10": {"name": "System Resilience & Offline Sandbox Mode", "module": "taska-resident / taska-technician", "priority": "Medium", "description": "Automatic API health check detection and localStorage mock sandbox simulation mode for robust offline demos and university presentations.", "color": "#6366F1"}};
+
+    function getStatusBadge(status) {
+      const s = status.toLowerCase();
+      if (s === 'done') return '<span class="badge badge-status-done">Done</span>';
+      if (s.includes('qa')) return '<span class="badge badge-status-qa">Testing / QA</span>';
+      if (s.includes('progress')) return '<span class="badge badge-status-progress">In Progress</span>';
+      if (s.includes('todo') || s.includes('to do')) return '<span class="badge badge-status-todo">To Do</span>';
+      return '<span class="badge badge-status-backlog">Backlog</span>';
+    }
+
+    function getPriorityBadge(priority) {
+      const p = priority.toLowerCase();
+      if (p === 'critical') return '<span class="badge badge-priority-critical">Critical</span>';
+      if (p === 'high') return '<span class="badge badge-priority-high">High</span>';
+      if (p === 'medium') return '<span class="badge badge-priority-medium">Medium</span>';
+      return '<span class="badge badge-priority-low">Low</span>';
+    }
+
+    function renderEpics() {
+      const container = document.getElementById('epicsContainer');
+      container.innerHTML = '';
+
+      Object.entries(epics).forEach(([epicKey, epic]) => {
+        const epicTasks = tasks.filter(t => t['Epic'] === epicKey);
+        const total = epicTasks.length;
+        const done = epicTasks.filter(t => t['Status'] === 'Done').length;
+        const pct = total > 0 ? Math.round((done / total) * 100) : 0;
+
+        const card = document.createElement('div');
+        card.className = 'epic-card';
+        card.innerHTML = `
+          <div class="epic-card-header">
+            <div>
+              <span class="epic-badge" style="background:${epic.color}">${epicKey}</span>
+              <h3 class="epic-title" style="margin-top:6px;">${escapeHtml(epic.name)}</h3>
+            </div>
+            <strong style="font-size:14px; color:${pct === 100 ? '#10B981' : '#2563EB'}">${pct}%</strong>
+          </div>
+          <p class="epic-desc">${escapeHtml(epic.description)}</p>
+          <div>
+            <div class="epic-progress-bar">
+              <div class="epic-progress-fill" style="width: ${pct}%; background:${epic.color}"></div>
+            </div>
+          </div>
+          <div class="epic-meta">
+            <span><strong>${done}</strong> of <strong>${total}</strong> tasks done</span>
+            <span class="epic-module-tag">${epic.module.split('/')[0].trim()}</span>
+          </div>
+        `;
+        container.appendChild(card);
+      });
+    }
+
+    function renderKanban() {
+      const lists = {
+        'Backlog': document.getElementById('kb-Backlog'),
+        'To Do': document.getElementById('kb-To-Do'),
+        'In Progress': document.getElementById('kb-In-Progress'),
+        'Testing / QA': document.getElementById('kb-Testing-QA'),
+        'Done': document.getElementById('kb-Done')
+      };
+
+      Object.values(lists).forEach(el => el.innerHTML = '');
+
+      tasks.forEach(task => {
+        const col = lists[task['Status']];
+        if (!col) return;
+
+        const c = document.createElement('div');
+        c.className = 'kanban-card';
+        c.innerHTML = `
+          <span class="kanban-card-key">${task['Issue Key']} · ${task['Epic']}</span>
+          <span class="kanban-card-title">${escapeHtml(task['Summary'])}</span>
+          <div class="kanban-card-meta">
+            ${getPriorityBadge(task['Priority'])}
+            <span style="font-size:11px; color:#64748B;">${task['Module'].split('/')[0].trim()}</span>
+          </div>
+        `;
+        col.appendChild(c);
+      });
+    }
+
+    function renderTable() {
+      const search = document.getElementById('tableSearch').value.toLowerCase().trim();
+      const epicFilter = document.getElementById('tableEpicFilter').value;
+      const statusFilter = document.getElementById('tableStatusFilter').value;
+      const priorityFilter = document.getElementById('tablePriorityFilter').value;
+
+      const tbody = document.getElementById('taskTableBody');
+      tbody.innerHTML = '';
+
+      tasks.forEach(task => {
+        if (epicFilter !== 'ALL' && task['Epic'] !== epicFilter) return;
+        if (statusFilter !== 'ALL' && task['Status'] !== statusFilter) return;
+        if (priorityFilter !== 'ALL' && task['Priority'] !== priorityFilter) return;
+
+        if (search) {
+          const matchKey = task['Issue Key'].toLowerCase().includes(search);
+          const matchSummary = task['Summary'].toLowerCase().includes(search);
+          const matchDesc = task['Description'].toLowerCase().includes(search);
+          const matchAC = task['Acceptance Criteria'].toLowerCase().includes(search);
+          if (!matchKey && !matchSummary && !matchDesc && !matchAC) return;
+        }
+
+        const tr = document.createElement('tr');
+        tr.innerHTML = `
+          <td class="task-key">${task['Issue Key']}</td>
+          <td>
+            <strong>${escapeHtml(task['Summary'])}</strong>
+            <div style="font-size:12px; color:#64748B; margin-top:2px;">${escapeHtml(task['Description'])}</div>
+          </td>
+          <td><span class="badge" style="background:#F1F5F9; color:#334155; font-weight:700;">${task['Epic']}</span></td>
+          <td><span style="font-size:12px; font-family:'JetBrains Mono', monospace;">${escapeHtml(task['Module'])}</span></td>
+          <td>${getPriorityBadge(task['Priority'])}</td>
+          <td>${getStatusBadge(task['Status'])}</td>
+          <td style="font-size:12px; color:#64748B;">${escapeHtml(task['Dependencies'])}</td>
+          <td style="font-size:12px; line-height:1.4;">${escapeHtml(task['Acceptance Criteria'])}</td>
+        `;
+        tbody.appendChild(tr);
+      });
+    }
+
+    function escapeHtml(str) {
+      if (!str) return '';
+      return str.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+    }
+
+    document.getElementById('tableSearch').addEventListener('input', renderTable);
+    document.getElementById('tableEpicFilter').addEventListener('change', renderTable);
+    document.getElementById('tableStatusFilter').addEventListener('change', renderTable);
+    document.getElementById('tablePriorityFilter').addEventListener('change', renderTable);
+
+    // Initial renders
+    renderEpics();
+    renderKanban();
+    renderTable();
+  </script>
+</body>
+</html>

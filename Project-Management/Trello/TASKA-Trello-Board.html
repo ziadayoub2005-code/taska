@@ -1,0 +1,896 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>TASKA — Project Management (Trello Board)</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --trello-blue: #0079BF;
+      --trello-bg: #005c91;
+      --trello-header: #026aa7;
+      --list-bg: #ebecf0;
+      --card-bg: #ffffff;
+      --card-hover: #f4f5f7;
+      --text-primary: #172b4d;
+      --text-secondary: #5e6c84;
+      --border-color: #dfe1e6;
+      --radius: 8px;
+      --shadow-sm: 0 1px 3px rgba(9, 30, 66, 0.15);
+      --shadow-md: 0 4px 12px rgba(9, 30, 66, 0.2);
+    }
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+    body {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      background: linear-gradient(135deg, #0079BF 0%, #5067C5 100%);
+      color: var(--text-primary);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      overflow-x: hidden;
+    }
+    /* Top Bar */
+    header {
+      background: rgba(0, 0, 0, 0.22);
+      backdrop-filter: blur(8px);
+      padding: 10px 20px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      color: #fff;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.15);
+    }
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+    .brand-logo {
+      width: 28px;
+      height: 28px;
+      background: #fff;
+      border-radius: 4px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 800;
+      color: var(--trello-blue);
+      font-size: 16px;
+    }
+    .brand-title {
+      font-size: 18px;
+      font-weight: 700;
+      letter-spacing: -0.01em;
+    }
+    .brand-badge {
+      background: rgba(255, 255, 255, 0.2);
+      padding: 3px 8px;
+      border-radius: 4px;
+      font-size: 12px;
+      font-weight: 500;
+    }
+    .header-actions {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+    .search-input {
+      background: rgba(255, 255, 255, 0.2);
+      border: 1px solid rgba(255, 255, 255, 0.25);
+      border-radius: 4px;
+      padding: 6px 12px;
+      color: #fff;
+      font-size: 13px;
+      outline: none;
+      transition: all 0.2s;
+      width: 220px;
+    }
+    .search-input::placeholder {
+      color: rgba(255, 255, 255, 0.7);
+    }
+    .search-input:focus {
+      background: #fff;
+      color: var(--text-primary);
+      width: 280px;
+    }
+    .btn {
+      background: rgba(255, 255, 255, 0.2);
+      border: none;
+      color: #fff;
+      padding: 6px 12px;
+      border-radius: 4px;
+      font-size: 13px;
+      font-weight: 500;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      transition: background 0.2s;
+    }
+    .btn:hover {
+      background: rgba(255, 255, 255, 0.3);
+    }
+    .btn-light {
+      background: #ffffff;
+      color: var(--text-primary);
+      font-weight: 600;
+    }
+    .btn-light:hover {
+      background: #f4f5f7;
+    }
+    /* Sub Header / Filters */
+    .filter-bar {
+      background: rgba(0, 0, 0, 0.12);
+      padding: 8px 20px;
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      flex-wrap: wrap;
+      color: #fff;
+      font-size: 13px;
+    }
+    .filter-group {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .filter-label {
+      font-size: 12px;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      opacity: 0.8;
+      font-weight: 600;
+    }
+    select.filter-select {
+      background: rgba(255, 255, 255, 0.2);
+      color: #fff;
+      border: 1px solid rgba(255, 255, 255, 0.3);
+      padding: 4px 8px;
+      border-radius: 4px;
+      font-size: 12px;
+      outline: none;
+      cursor: pointer;
+    }
+    select.filter-select option {
+      background: #172b4d;
+      color: #fff;
+    }
+    .stats-pill {
+      margin-left: auto;
+      display: flex;
+      gap: 8px;
+      font-size: 12px;
+    }
+    .stat-chip {
+      background: rgba(255, 255, 255, 0.2);
+      padding: 3px 10px;
+      border-radius: 12px;
+      font-weight: 500;
+    }
+
+    /* Board Canvas */
+    .board-canvas {
+      flex: 1;
+      display: flex;
+      gap: 16px;
+      padding: 16px 20px;
+      overflow-x: auto;
+      align-items: flex-start;
+    }
+    .board-canvas::-webkit-scrollbar {
+      height: 10px;
+    }
+    .board-canvas::-webkit-scrollbar-track {
+      background: rgba(0, 0, 0, 0.15);
+      border-radius: 5px;
+    }
+    .board-canvas::-webkit-scrollbar-thumb {
+      background: rgba(255, 255, 255, 0.3);
+      border-radius: 5px;
+    }
+
+    /* List Column */
+    .list-column {
+      background: var(--list-bg);
+      border-radius: 10px;
+      width: 320px;
+      min-width: 320px;
+      max-height: calc(100vh - 140px);
+      display: flex;
+      flex-direction: column;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.15);
+      border: 1px solid rgba(0,0,0,0.06);
+    }
+    .list-header {
+      padding: 12px 14px 8px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .list-title {
+      font-size: 14px;
+      font-weight: 700;
+      color: var(--text-primary);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .list-count {
+      background: #dcdfe4;
+      color: #44546f;
+      font-size: 11px;
+      padding: 2px 7px;
+      border-radius: 10px;
+      font-weight: 600;
+    }
+    .list-indicator {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+    }
+    .list-indicator.backlog { background: #8590a2; }
+    .list-indicator.todo { background: #0065ff; }
+    .list-indicator.inprogress { background: #ff991f; }
+    .list-indicator.qa { background: #6554c0; }
+    .list-indicator.done { background: #36b37e; }
+
+    .list-cards {
+      padding: 6px 10px 10px;
+      overflow-y: auto;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      min-height: 50px;
+      flex: 1;
+    }
+    .list-cards::-webkit-scrollbar {
+      width: 6px;
+    }
+    .list-cards::-webkit-scrollbar-thumb {
+      background: #c1c7d0;
+      border-radius: 3px;
+    }
+
+    /* Card Item */
+    .trello-card {
+      background: var(--card-bg);
+      border-radius: 8px;
+      padding: 10px 12px;
+      box-shadow: var(--shadow-sm);
+      cursor: pointer;
+      transition: transform 0.15s ease, box-shadow 0.15s ease, border-color 0.15s ease;
+      border: 1px solid transparent;
+      user-select: none;
+    }
+    .trello-card:hover {
+      transform: translateY(-2px);
+      box-shadow: var(--shadow-md);
+      border-color: #c1c7d0;
+    }
+    .trello-card.dragging {
+      opacity: 0.5;
+      transform: rotate(2deg) scale(0.98);
+    }
+    .card-labels {
+      display: flex;
+      gap: 4px;
+      flex-wrap: wrap;
+      margin-bottom: 6px;
+    }
+    .badge {
+      font-size: 10px;
+      font-weight: 700;
+      padding: 2px 6px;
+      border-radius: 4px;
+      letter-spacing: 0.02em;
+      text-transform: uppercase;
+    }
+    .badge-epic {
+      background: #ebecf0;
+      color: #333;
+    }
+    .badge-priority {
+      color: #fff;
+    }
+    .p-critical { background: #e53e3e; }
+    .p-high { background: #dd6b20; }
+    .p-medium { background: #d69e2e; }
+    .p-low { background: #38a169; }
+
+    .badge-module {
+      background: #f1f2f4;
+      color: #4b5563;
+      border: 1px solid #e5e7eb;
+    }
+
+    .card-key {
+      font-size: 11px;
+      font-weight: 700;
+      color: #0052cc;
+      margin-bottom: 2px;
+    }
+    .card-title {
+      font-size: 13px;
+      font-weight: 600;
+      line-height: 1.35;
+      color: var(--text-primary);
+      margin-bottom: 6px;
+    }
+    .card-desc {
+      font-size: 11.5px;
+      color: var(--text-secondary);
+      line-height: 1.35;
+      margin-bottom: 8px;
+      display: -webkit-box;
+      -webkit-line-clamp: 2;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+    }
+    .card-footer {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-size: 11px;
+      color: var(--text-secondary);
+      padding-top: 6px;
+      border-top: 1px solid #f4f5f7;
+    }
+    .card-metric {
+      display: inline-flex;
+      align-items: center;
+      gap: 3px;
+    }
+    .card-deps {
+      color: #de350b;
+      font-weight: 600;
+    }
+
+    /* Card Modal */
+    .modal-backdrop {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(9, 30, 66, 0.6);
+      backdrop-filter: blur(4px);
+      z-index: 1000;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+    }
+    .modal-backdrop.active {
+      display: flex;
+    }
+    .modal-card {
+      background: #fff;
+      border-radius: 12px;
+      width: 720px;
+      max-width: 95vw;
+      max-height: 90vh;
+      overflow-y: auto;
+      box-shadow: 0 12px 30px rgba(0, 0, 0, 0.35);
+      position: relative;
+      animation: modalSlide 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+    @keyframes modalSlide {
+      from { transform: scale(0.96) translateY(10px); opacity: 0; }
+      to { transform: scale(1) translateY(0); opacity: 1; }
+    }
+    .modal-header {
+      padding: 20px 24px 16px;
+      border-bottom: 1px solid #ebecf0;
+      position: relative;
+    }
+    .modal-close {
+      position: absolute;
+      top: 18px;
+      right: 20px;
+      background: none;
+      border: none;
+      font-size: 22px;
+      color: #6b778c;
+      cursor: pointer;
+      line-height: 1;
+    }
+    .modal-close:hover {
+      color: #172b4d;
+    }
+    .modal-body {
+      padding: 20px 24px;
+      display: grid;
+      grid-template-columns: 2fr 1fr;
+      gap: 24px;
+    }
+    @media (max-width: 680px) {
+      .modal-body {
+        grid-template-columns: 1fr;
+      }
+    }
+    .modal-section-title {
+      font-size: 13px;
+      text-transform: uppercase;
+      font-weight: 700;
+      color: #5e6c84;
+      margin-bottom: 8px;
+      letter-spacing: 0.05em;
+    }
+    .modal-content-box {
+      background: #f8fafc;
+      border-radius: 6px;
+      padding: 12px 14px;
+      border: 1px solid #e2e8f0;
+      font-size: 13.5px;
+      line-height: 1.5;
+      color: #334155;
+      margin-bottom: 18px;
+    }
+    .ac-checklist {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+    .ac-item {
+      display: flex;
+      align-items: flex-start;
+      gap: 10px;
+      background: #f8fafc;
+      padding: 8px 12px;
+      border-radius: 6px;
+      border: 1px solid #e2e8f0;
+      font-size: 13px;
+      line-height: 1.4;
+    }
+    .ac-item input[type="checkbox"] {
+      margin-top: 3px;
+      accent-color: #0079BF;
+      cursor: pointer;
+    }
+    .modal-meta-row {
+      margin-bottom: 14px;
+    }
+    .modal-meta-label {
+      font-size: 11px;
+      text-transform: uppercase;
+      font-weight: 700;
+      color: #64748b;
+      margin-bottom: 4px;
+    }
+    .modal-meta-val {
+      font-size: 13px;
+      font-weight: 600;
+      color: #1e293b;
+    }
+    .toast {
+      position: fixed;
+      bottom: 20px;
+      right: 20px;
+      background: #1e293b;
+      color: #fff;
+      padding: 10px 18px;
+      border-radius: 6px;
+      font-size: 13px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.25);
+      z-index: 2000;
+      display: none;
+      animation: fadeIn 0.2s ease;
+    }
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Top Bar -->
+  <header>
+    <div class="brand">
+      <div class="brand-logo">T</div>
+      <div class="brand-title">TASKA — Project Management</div>
+      <div class="brand-badge">Agile Kanban</div>
+    </div>
+    <div class="header-actions">
+      <input type="text" id="searchInput" class="search-input" placeholder="Search tasks, keys, AC...">
+      <a href="../TASKA-Project-Dashboard.html" class="btn btn-light">📊 View Dashboard</a>
+    </div>
+  </header>
+
+  <!-- Filter Bar -->
+  <div class="filter-bar">
+    <div class="filter-group">
+      <span class="filter-label">Epic:</span>
+      <select id="epicFilter" class="filter-select">
+        <option value="ALL">All Epics (10)</option>
+        <option value="EPC-01">EPC-01: Auth & Verification</option>
+        <option value="EPC-02">EPC-02: Compound Catalog</option>
+        <option value="EPC-03">EPC-03: Order & Bidding</option>
+        <option value="EPC-04">EPC-04: Tech & Live GPS</option>
+        <option value="EPC-05">EPC-05: SignalR Hubs</option>
+        <option value="EPC-06">EPC-06: Billing & Rating</option>
+        <option value="EPC-07">EPC-07: Admin Operations</option>
+        <option value="EPC-08">EPC-08: Support Helpdesk</option>
+        <option value="EPC-09">EPC-09: Localization (AR/EN)</option>
+        <option value="EPC-10">EPC-10: Offline Sandbox</option>
+      </select>
+    </div>
+
+    <div class="filter-group">
+      <span class="filter-label">Priority:</span>
+      <select id="priorityFilter" class="filter-select">
+        <option value="ALL">All Priorities</option>
+        <option value="Critical">Critical (9)</option>
+        <option value="High">High (12)</option>
+        <option value="Medium">Medium (5)</option>
+        <option value="Low">Low (2)</option>
+      </select>
+    </div>
+
+    <div class="filter-group">
+      <span class="filter-label">Module:</span>
+      <select id="moduleFilter" class="filter-select">
+        <option value="ALL">All Modules</option>
+        <option value="taska-api">taska-api</option>
+        <option value="taska-resident">taska-resident</option>
+        <option value="taska-technician">taska-technician</option>
+        <option value="admin-react">admin-react</option>
+      </select>
+    </div>
+
+    <button id="resetFilters" class="btn">↺ Reset</button>
+
+    <div class="stats-pill">
+      <span class="stat-chip">Total: <strong>28</strong></span>
+      <span class="stat-chip" style="background:#36b37e; color:#fff;">Done: <strong>21 (75%)</strong></span>
+      <span class="stat-chip" style="background:#6554c0; color:#fff;">QA: <strong>3</strong></span>
+      <span class="stat-chip" style="background:#ff991f; color:#fff;">In Progress: <strong>1</strong></span>
+      <span class="stat-chip" style="background:#0065ff; color:#fff;">To Do: <strong>1</strong></span>
+      <span class="stat-chip" style="background:#8590a2; color:#fff;">Backlog: <strong>2</strong></span>
+    </div>
+  </div>
+
+  <!-- Board Canvas -->
+  <main class="board-canvas" id="boardCanvas">
+    <!-- Backlog Column -->
+    <div class="list-column" data-status="Backlog">
+      <div class="list-header">
+        <div class="list-title">
+          <span class="list-indicator backlog"></span>
+          Backlog
+          <span class="list-count" id="count-Backlog">0</span>
+        </div>
+      </div>
+      <div class="list-cards" id="cards-Backlog" ondragover="allowDrop(event)" ondrop="handleDrop(event, 'Backlog')"></div>
+    </div>
+
+    <!-- To Do Column -->
+    <div class="list-column" data-status="To Do">
+      <div class="list-header">
+        <div class="list-title">
+          <span class="list-indicator todo"></span>
+          To Do
+          <span class="list-count" id="count-To-Do">0</span>
+        </div>
+      </div>
+      <div class="list-cards" id="cards-To-Do" ondragover="allowDrop(event)" ondrop="handleDrop(event, 'To Do')"></div>
+    </div>
+
+    <!-- In Progress Column -->
+    <div class="list-column" data-status="In Progress">
+      <div class="list-header">
+        <div class="list-title">
+          <span class="list-indicator inprogress"></span>
+          In Progress
+          <span class="list-count" id="count-In-Progress">0</span>
+        </div>
+      </div>
+      <div class="list-cards" id="cards-In-Progress" ondragover="allowDrop(event)" ondrop="handleDrop(event, 'In Progress')"></div>
+    </div>
+
+    <!-- Testing / QA Column -->
+    <div class="list-column" data-status="Testing / QA">
+      <div class="list-header">
+        <div class="list-title">
+          <span class="list-indicator qa"></span>
+          Testing / QA
+          <span class="list-count" id="count-Testing-QA">0</span>
+        </div>
+      </div>
+      <div class="list-cards" id="cards-Testing-QA" ondragover="allowDrop(event)" ondrop="handleDrop(event, 'Testing / QA')"></div>
+    </div>
+
+    <!-- Done Column -->
+    <div class="list-column" data-status="Done">
+      <div class="list-header">
+        <div class="list-title">
+          <span class="list-indicator done"></span>
+          Done
+          <span class="list-count" id="count-Done">0</span>
+        </div>
+      </div>
+      <div class="list-cards" id="cards-Done" ondragover="allowDrop(event)" ondrop="handleDrop(event, 'Done')"></div>
+    </div>
+  </main>
+
+  <!-- Card Detail Modal -->
+  <div class="modal-backdrop" id="cardModal" onclick="closeModalOnBackdrop(event)">
+    <div class="modal-card">
+      <div class="modal-header">
+        <button class="modal-close" onclick="closeModal()">&times;</button>
+        <div id="modalKey" class="card-key" style="font-size:13px;"></div>
+        <h2 id="modalTitle" style="font-size:18px; margin-top:4px;"></h2>
+        <div style="font-size:12px; color:#5e6c84; margin-top:4px;">in list <strong id="modalStatus"></strong></div>
+      </div>
+      <div class="modal-body">
+        <div>
+          <div class="modal-section-title">Description</div>
+          <div id="modalDesc" class="modal-content-box"></div>
+
+          <div class="modal-section-title">Acceptance Criteria</div>
+          <ul id="modalAC" class="ac-checklist"></ul>
+        </div>
+        <div>
+          <div class="modal-meta-row">
+            <div class="modal-meta-label">Epic</div>
+            <div id="modalEpic" class="modal-meta-val"></div>
+          </div>
+          <div class="modal-meta-row">
+            <div class="modal-meta-label">Priority</div>
+            <div id="modalPriority" class="modal-meta-val"></div>
+          </div>
+          <div class="modal-meta-row">
+            <div class="modal-meta-label">Module / Subsystem</div>
+            <div id="modalModule" class="modal-meta-val"></div>
+          </div>
+          <div class="modal-meta-row">
+            <div class="modal-meta-label">Dependencies</div>
+            <div id="modalDeps" class="modal-meta-val"></div>
+          </div>
+          <div class="modal-meta-row" style="margin-top:24px;">
+            <div class="modal-meta-label">Move To List</div>
+            <select id="modalStatusSelect" class="filter-select" style="width:100%; padding:8px; background:#f1f2f4; color:#172b4d; border:1px solid #c1c7d0;" onchange="moveCurrentCard(this.value)">
+              <option value="Backlog">Backlog</option>
+              <option value="To Do">To Do</option>
+              <option value="In Progress">In Progress</option>
+              <option value="Testing / QA">Testing / QA</option>
+              <option value="Done">Done</option>
+            </select>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div id="toast" class="toast"></div>
+
+  <script>
+    const tasks = [{"Issue Key": "TSK-101", "Summary": "Resident Registration with Compound Code Validation", "Description": "Implement resident registration requiring Compound Code apartment and phone with 6-digit email OTP generation", "Epic": "EPC-01", "Module": "taska-api / taska-resident", "Priority": "Critical", "Status": "Done", "Acceptance Criteria": "Validates compound code; generates 6-digit OTP; sends OTPMail; returns 201 Created", "Dependencies": "None"}, {"Issue Key": "TSK-102", "Summary": "Email OTP Verification & JWT Bearer Token Issuance", "Description": "Provide 6-digit OTP verification endpoint and client screen returning ASP.NET Core JWT token", "Epic": "EPC-01", "Module": "taska-api / taska-resident", "Priority": "Critical", "Status": "Done", "Acceptance Criteria": "Validates OTP expiration; clears OTP fields; issues JWT Bearer token", "Dependencies": "TSK-101"}, {"Issue Key": "TSK-103", "Summary": "Role-Based JWT Bearer Authentication Architecture", "Description": "Configure ASP.NET Core JWT Bearer authentication with distinct claims and policies for Residents and Technicians", "Epic": "EPC-01", "Module": "taska-api", "Priority": "Critical", "Status": "Done", "Acceptance Criteria": "Enforces [Authorize(Roles = \"...\")] policies; returns 401/403 on unauthorized access", "Dependencies": "None"}, {"Issue Key": "TSK-104", "Summary": "Technician Multi-Identifier Login", "Description": "Allow technicians to login via either registered phone number or email with password", "Epic": "EPC-01", "Module": "taska-api / taska-technician", "Priority": "High", "Status": "Done", "Acceptance Criteria": "Validates phone or email against database; issues technician JWT token", "Dependencies": "TSK-103"}, {"Issue Key": "TSK-201", "Summary": "Residential Compound Database Schema & Management CRUD", "Description": "Create compounds table and admin interface to manage gated community entities", "Epic": "EPC-02", "Module": "taska-api / admin-react", "Priority": "High", "Status": "Done", "Acceptance Criteria": "Enforces unique compound code; provides full CRUD operations in admin", "Dependencies": "None"}, {"Issue Key": "TSK-202", "Summary": "Service Categories Catalog & Dynamic Base Pricing", "Description": "Implement service_categories table with base pricing icons and sort order", "Epic": "EPC-02", "Module": "taska-api / admin-react", "Priority": "High", "Status": "Done", "Acceptance Criteria": "Returns categories ordered by sort_order; allows admin to modify base price and icon", "Dependencies": "None"}, {"Issue Key": "TSK-301", "Summary": "Maintenance Request Submission with Photo Upload & Geolocation", "Description": "Allow residents to submit maintenance requests with images coordinates and urgency", "Epic": "EPC-03", "Module": "taska-api / taska-resident", "Priority": "Critical", "Status": "Done", "Acceptance Criteria": "Enforces single active order policy; saves image to public/orders; emits NewOrderEvent over SignalR", "Dependencies": "TSK-102|TSK-202"}, {"Issue Key": "TSK-302", "Summary": "Technician Reverse Bidding Marketplace", "Description": "Allow online compound technicians to place monetary bids with notes on pending orders", "Epic": "EPC-03", "Module": "taska-api / taska-technician", "Priority": "Critical", "Status": "Done", "Acceptance Criteria": "Enforces unique technician bid per order; emits NewBidEvent over SignalR to resident", "Dependencies": "TSK-301"}, {"Issue Key": "TSK-303", "Summary": "Bid Acceptance & Automatic Competitor Dismissal", "Description": "Resident accepts a technician bid updating order status to accepted and rejecting other bids", "Epic": "EPC-03", "Module": "taska-api / taska-resident", "Priority": "Critical", "Status": "Done", "Acceptance Criteria": "Atomic EF Core transaction updates order price and technician; marks other bids rejected; emits OrderAcceptedEvent", "Dependencies": "TSK-302"}, {"Issue Key": "TSK-304", "Summary": "Order Cancellation Flow with Audit Trail", "Description": "Enable residents to cancel orders with recorded cancellation reason in status history", "Epic": "EPC-03", "Module": "taska-api / taska-resident", "Priority": "Medium", "Status": "Testing / QA", "Acceptance Criteria": "Validates cancellable state; logs cancellation reason; notifies technician over SignalR", "Dependencies": "TSK-301"}, {"Issue Key": "TSK-401", "Summary": "Technician Online/Offline Duty Status Toggle", "Description": "Implement duty status switch to control technician dispatch availability", "Epic": "EPC-04", "Module": "taska-api / taska-technician", "Priority": "High", "Status": "Done", "Acceptance Criteria": "Toggles status between online and offline; filters compound broadcast recipients", "Dependencies": "TSK-104"}, {"Issue Key": "TSK-402", "Summary": "Background GPS Geolocation Tracking & Movement Logging", "Description": "Stream technician GPS coordinates via watchPosition and log movement to database", "Epic": "EPC-04", "Module": "taska-api / taska-technician", "Priority": "Critical", "Status": "Done", "Acceptance Criteria": "Updates technician coordinates; records movement log; broadcasts LocationUpdated over SignalR", "Dependencies": "TSK-401"}, {"Issue Key": "TSK-403", "Summary": "Sequential Job Execution State Machine", "Description": "Enforce order state transitions (accepted to arrived to in_progress to completed)", "Epic": "EPC-04", "Module": "taska-api / taska-technician", "Priority": "Critical", "Status": "Done", "Acceptance Criteria": "Validates state machine transitions; logs timestamps; generates pending payment", "Dependencies": "TSK-303"}, {"Issue Key": "TSK-501", "Summary": "ASP.NET Core SignalR Real-Time Hubs Setup & JWT Authorization", "Description": "Configure SignalR Hubs (OrderHub LocationHub SupportHub) with JWT Bearer query token authorization", "Epic": "EPC-05", "Module": "taska-api", "Priority": "Critical", "Status": "Done", "Acceptance Criteria": "Initializes SignalR endpoints; verifies JWT Bearer token on connection handshakes; manages client groups", "Dependencies": "None"}, {"Issue Key": "TSK-502", "Summary": "In-Order Live Chat between Resident and Technician", "Description": "Provide real-time messaging interface within active orders via SignalR OrderHub", "Epic": "EPC-05", "Module": "taska-api / taska-resident / taska-technician", "Priority": "High", "Status": "Done", "Acceptance Criteria": "Restricts messaging to order participants; broadcasts ChatMessage over SignalR", "Dependencies": "TSK-501"}, {"Issue Key": "TSK-601", "Summary": "Automated Invoice Generation & Payment Simulation", "Description": "Generate payment records on completion and support Cash and Visa payment flows", "Epic": "EPC-06", "Module": "taska-api / taska-resident / admin-react", "Priority": "High", "Status": "In Progress", "Acceptance Criteria": "Generates transaction IDs; handles simulated payment success and failure; supports admin refund", "Dependencies": "TSK-403"}, {"Issue Key": "TSK-602", "Summary": "Customer Satisfaction 5-Star Rating & Review Engine", "Description": "Allow residents to submit 1-5 star ratings and recalculate technician overall average", "Epic": "EPC-06", "Module": "taska-api / taska-resident / admin-react", "Priority": "Medium", "Status": "Done", "Acceptance Criteria": "Enforces 1-5 star range; recalculates technician average rating; prevents duplicate rating", "Dependencies": "TSK-601"}, {"Issue Key": "TSK-701", "Summary": "Executive KPI Operations Dashboard", "Description": "Build administrative dashboard showing real-time counters and Recharts analytics", "Epic": "EPC-07", "Module": "admin-react / taska-api", "Priority": "High", "Status": "Done", "Acceptance Criteria": "Displays stats cards; listens to WebSocket status events; renders revenue and status charts", "Dependencies": "None"}, {"Issue Key": "TSK-702", "Summary": "Real-Time Drag-and-Drop Orders Kanban Board", "Description": "Implement live Kanban dispatch board with status lanes and card detail inspection", "Epic": "EPC-07", "Module": "admin-react", "Priority": "High", "Status": "Testing / QA", "Acceptance Criteria": "Columns update live over ASP.NET Core SignalR; supports drag-and-drop state transition", "Dependencies": "TSK-701|TSK-501"}, {"Issue Key": "TSK-703", "Summary": "Technician & Resident Directory Management", "Description": "Provide administration tables to manage technicians and residents across compounds", "Epic": "EPC-07", "Module": "admin-react / taska-api", "Priority": "Medium", "Status": "Done", "Acceptance Criteria": "Supports search and compound filter; allows technician creation and deletion", "Dependencies": "None"}, {"Issue Key": "TSK-801", "Summary": "Resident Support Widget & Ticket Creation", "Description": "Implement floating support chat widget with single open ticket constraint", "Epic": "EPC-08", "Module": "taska-resident / taska-api", "Priority": "High", "Status": "Done", "Acceptance Criteria": "Enforces single active ticket per resident; broadcasts TicketCreated over SupportHub", "Dependencies": "TSK-102"}, {"Issue Key": "TSK-802", "Summary": "Admin Helpdesk Dispatch Desk & Ticket Resolution", "Description": "Administrative interface to respond to support tickets and close cases", "Epic": "EPC-08", "Module": "admin-react / taska-api", "Priority": "High", "Status": "Testing / QA", "Acceptance Criteria": "Real-time two-way messaging on SupportHub; resolution rating prompt", "Dependencies": "TSK-801"}, {"Issue Key": "TSK-901", "Summary": "Database-Driven Translation Schema & Public API", "Description": "Store translation key-values in MySQL and serve via public API endpoint", "Epic": "EPC-09", "Module": "taska-api", "Priority": "High", "Status": "Done", "Acceptance Criteria": "Enforces unique key per language; serves translation JSON dictionary", "Dependencies": "None"}, {"Issue Key": "TSK-902", "Summary": "Client Bilingual Context & RTL Layout Engine", "Description": "Support English and Arabic switching with automatic RTL layout mirroring", "Epic": "EPC-09", "Module": "taska-resident / taska-technician / admin-react", "Priority": "High", "Status": "Done", "Acceptance Criteria": "Toggles dir attribute between ltr and rtl; persists language selection", "Dependencies": "TSK-901"}, {"Issue Key": "TSK-903", "Summary": "Automated Translation Key Seeder & Machine Sync", "Description": "Tooling to automatically discover untranslated keys in frontend and seed database", "Epic": "EPC-09", "Module": "taska-api", "Priority": "Low", "Status": "To Do", "Acceptance Criteria": "Parses frontend codebase for translation keys and creates database records", "Dependencies": "TSK-901"}, {"Issue Key": "TSK-1001", "Summary": "Client Health Check & Automatic Offline Sandbox Mode", "Description": "Detect API availability and fall back to localStorage mock sandbox when offline", "Epic": "EPC-10", "Module": "taska-resident / taska-technician", "Priority": "Medium", "Status": "Done", "Acceptance Criteria": "Pings categories endpoint; falls back to sandbox.ts without crashing", "Dependencies": "None"}, {"Issue Key": "TSK-1101", "Summary": "Voice Message Notes in Order Chat", "Description": "Enable audio voice clip recording and playback in resident-technician chat", "Epic": "EPC-05", "Module": "taska-api / All Clients", "Priority": "Low", "Status": "Backlog", "Acceptance Criteria": "Audio recording via MediaRecorder API; storage in S3/local static disk", "Dependencies": "TSK-502"}, {"Issue Key": "TSK-1102", "Summary": "Compound Security Gate Pass QR Code Generator", "Description": "Generate digital entry QR code for assigned technician at compound gate", "Epic": "EPC-04", "Module": "taska-api / taska-technician", "Priority": "Medium", "Status": "Backlog", "Acceptance Criteria": "Generates time-limited QR code linked to order for compound gate security scanner", "Dependencies": "TSK-403"}];
+    const epics = {"EPC-01": {"name": "Role-Based JWT Bearer Authentication & Verification", "module": "taska-api / taska-resident / taska-technician", "priority": "Critical", "description": "Compound-verified resident registration, 6-digit email OTP verification, technician credentials validation, and role-based JWT Bearer authorization.", "color": "#EF4444"}, "EPC-02": {"name": "Compound & Service Catalog Infrastructure", "module": "taska-api / admin-react", "priority": "High", "description": "EF Core 8 relational entities, gated residential compound records, service categories catalog, dynamic base pricing, and icon assignments.", "color": "#F97316"}, "EPC-03": {"name": "Resident Order Creation & Bidding Marketplace", "module": "taska-api / taska-resident / taska-technician", "priority": "Critical", "description": "Maintenance request creation with photo upload & geolocation, technician reverse bidding marketplace, and atomic bid acceptance.", "color": "#EAB308"}, "EPC-04": {"name": "Technician Operations & Live GPS Tracking", "module": "taska-api / taska-technician", "priority": "Critical", "description": "Online/offline duty status toggle, background GPS tracking with movement breadcrumb logging, and sequential order state machine.", "color": "#10B981"}, "EPC-05": {"name": "Real-Time SignalR Hubs Infrastructure", "module": "taska-api / All Clients", "priority": "Critical", "description": "ASP.NET Core SignalR real-time hubs (OrderHub, LocationHub, SupportHub, CompoundHub) with JWT Bearer handshake authorization.", "color": "#06B6D4"}, "EPC-06": {"name": "Billing, Simulated Payments & Rating Engine", "module": "taska-api / taska-resident / admin-react", "priority": "High", "description": "Automated invoice generation, Cash and Visa simulated payment processing, and customer satisfaction 5-star rating aggregation engine.", "color": "#3B82F6"}, "EPC-07": {"name": "Admin Operations Console & Kanban Dispatch", "module": "admin-react / taska-api", "priority": "High", "description": "Executive KPI operations dashboard with Recharts analytics, real-time drag-and-drop orders Kanban dispatch board, and user directories.", "color": "#8B5CF6"}, "EPC-08": {"name": "In-App Customer Support Helpdesk", "module": "taska-resident / admin-react / taska-api", "priority": "High", "description": "Floating in-app resident customer support widget, single active ticket constraint, and administrative two-way helpdesk dispatch desk.", "color": "#EC4899"}, "EPC-09": {"name": "Dynamic Bilingual Localization (EN/AR)", "module": "taska-api / All Clients", "priority": "High", "description": "Database-driven MySQL key-value translations schema, client bilingual context with automatic RTL layout mirroring, and translation key sync.", "color": "#14B8A6"}, "EPC-10": {"name": "System Resilience & Offline Sandbox Mode", "module": "taska-resident / taska-technician", "priority": "Medium", "description": "Automatic API health check detection and localStorage mock sandbox simulation mode for robust offline demos and university presentations.", "color": "#6366F1"}};
+
+    let currentSelectedCardKey = null;
+
+    function getListContainerId(status) {
+      if (status === 'Backlog') return 'cards-Backlog';
+      if (status === 'To Do') return 'cards-To-Do';
+      if (status === 'In Progress') return 'cards-In-Progress';
+      if (status === 'Testing / QA') return 'cards-Testing-QA';
+      if (status === 'Done') return 'cards-Done';
+      return 'cards-Backlog';
+    }
+
+    function getCountContainerId(status) {
+      if (status === 'Backlog') return 'count-Backlog';
+      if (status === 'To Do') return 'count-To-Do';
+      if (status === 'In Progress') return 'count-In-Progress';
+      if (status === 'Testing / QA') return 'count-Testing-QA';
+      if (status === 'Done') return 'count-Done';
+      return 'count-Backlog';
+    }
+
+    function getPriorityClass(priority) {
+      const p = priority.toLowerCase();
+      if (p === 'critical') return 'p-critical';
+      if (p === 'high') return 'p-high';
+      if (p === 'medium') return 'p-medium';
+      return 'p-low';
+    }
+
+    function renderBoard() {
+      const epicFilter = document.getElementById('epicFilter').value;
+      const priorityFilter = document.getElementById('priorityFilter').value;
+      const moduleFilter = document.getElementById('moduleFilter').value;
+      const searchQuery = document.getElementById('searchInput').value.toLowerCase().trim();
+
+      const lists = {
+        'Backlog': document.getElementById('cards-Backlog'),
+        'To Do': document.getElementById('cards-To-Do'),
+        'In Progress': document.getElementById('cards-In-Progress'),
+        'Testing / QA': document.getElementById('cards-Testing-QA'),
+        'Done': document.getElementById('cards-Done')
+      };
+
+      Object.values(lists).forEach(el => el.innerHTML = '');
+      const counts = { 'Backlog': 0, 'To Do': 0, 'In Progress': 0, 'Testing / QA': 0, 'Done': 0 };
+
+      tasks.forEach(task => {
+        // Filter criteria
+        if (epicFilter !== 'ALL' && task['Epic'] !== epicFilter) return;
+        if (priorityFilter !== 'ALL' && task['Priority'] !== priorityFilter) return;
+        if (moduleFilter !== 'ALL' && !task['Module'].includes(moduleFilter)) return;
+        if (searchQuery) {
+          const matchKey = task['Issue Key'].toLowerCase().includes(searchQuery);
+          const matchTitle = task['Summary'].toLowerCase().includes(searchQuery);
+          const matchDesc = task['Description'].toLowerCase().includes(searchQuery);
+          const matchAC = task['Acceptance Criteria'].toLowerCase().includes(searchQuery);
+          if (!matchKey && !matchTitle && !matchDesc && !matchAC) return;
+        }
+
+        const status = task['Status'];
+        if (!lists[status]) return;
+
+        counts[status]++;
+
+        // Split AC for count
+        const acItems = task['Acceptance Criteria'].split(';').map(x => x.trim()).filter(Boolean);
+        const epicData = epics[task['Epic']] || { color: '#8590a2', name: task['Epic'] };
+
+        const card = document.createElement('div');
+        card.className = 'trello-card';
+        card.draggable = true;
+        card.dataset.key = task['Issue Key'];
+        card.id = 'card-' + task['Issue Key'];
+
+        // Drag events
+        card.addEventListener('dragstart', (e) => {
+          card.classList.add('dragging');
+          e.dataTransfer.setData('text/plain', task['Issue Key']);
+        });
+        card.addEventListener('dragend', () => {
+          card.classList.remove('dragging');
+        });
+        card.addEventListener('click', () => openCardModal(task['Issue Key']));
+
+        card.innerHTML = `
+          <div class="card-labels">
+            <span class="badge badge-epic" style="border-left: 3px solid ${epicData.color};">${task['Epic']}</span>
+            <span class="badge badge-priority ${getPriorityClass(task['Priority'])}">${task['Priority']}</span>
+            <span class="badge badge-module">${task['Module'].split('/')[0].trim()}</span>
+          </div>
+          <div class="card-key">${task['Issue Key']}</div>
+          <div class="card-title">${escapeHtml(task['Summary'])}</div>
+          <div class="card-desc">${escapeHtml(task['Description'])}</div>
+          <div class="card-footer">
+            <span class="card-metric" title="Acceptance Criteria">
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 11 12 14 22 4"></polyline><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"></path></svg>
+              ${acItems.length}
+            </span>
+            ${task['Dependencies'] && task['Dependencies'] !== 'None' ? `
+              <span class="card-metric card-deps" title="Depends on: ${escapeHtml(task['Dependencies'])}">
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg>
+                ${escapeHtml(task['Dependencies'])}
+              </span>
+            ` : ''}
+          </div>
+        `;
+
+        lists[status].appendChild(card);
+      });
+
+      // Update counters
+      Object.keys(counts).forEach(st => {
+        const countEl = document.getElementById(getCountContainerId(st));
+        if (countEl) countEl.textContent = counts[st];
+      });
+    }
+
+    function allowDrop(e) {
+      e.preventDefault();
+    }
+
+    function handleDrop(e, targetStatus) {
+      e.preventDefault();
+      const issueKey = e.dataTransfer.getData('text/plain');
+      if (!issueKey) return;
+
+      const task = tasks.find(t => t['Issue Key'] === issueKey);
+      if (task && task['Status'] !== targetStatus) {
+        const oldStatus = task['Status'];
+        task['Status'] = targetStatus;
+        renderBoard();
+        showToast(`Moved ${issueKey} from ${oldStatus} ➔ ${targetStatus}`);
+      }
+    }
+
+    function openCardModal(key) {
+      const task = tasks.find(t => t['Issue Key'] === key);
+      if (!task) return;
+
+      currentSelectedCardKey = key;
+      document.getElementById('modalKey').textContent = task['Issue Key'];
+      document.getElementById('modalTitle').textContent = task['Summary'];
+      document.getElementById('modalStatus').textContent = task['Status'];
+      document.getElementById('modalDesc').textContent = task['Description'];
+      document.getElementById('modalEpic').textContent = `${task['Epic']} — ${epics[task['Epic']] ? epics[task['Epic']].name : ''}`;
+      document.getElementById('modalPriority').innerHTML = `<span class="badge badge-priority ${getPriorityClass(task['Priority'])}">${task['Priority']}</span>`;
+      document.getElementById('modalModule').textContent = task['Module'];
+      document.getElementById('modalDeps').textContent = task['Dependencies'] === 'None' ? 'None (Independent)' : task['Dependencies'];
+      document.getElementById('modalStatusSelect').value = task['Status'];
+
+      const acContainer = document.getElementById('modalAC');
+      acContainer.innerHTML = '';
+      const acItems = task['Acceptance Criteria'].split(';').map(x => x.trim()).filter(Boolean);
+      acItems.forEach((ac, idx) => {
+        const li = document.createElement('li');
+        li.className = 'ac-item';
+        const isDone = task['Status'] === 'Done';
+        li.innerHTML = `
+          <input type="checkbox" id="ac-${idx}" ${isDone ? 'checked' : ''}>
+          <label for="ac-${idx}">${escapeHtml(ac)}</label>
+        `;
+        acContainer.appendChild(li);
+      });
+
+      document.getElementById('cardModal').classList.add('active');
+    }
+
+    function closeModal() {
+      document.getElementById('cardModal').classList.remove('active');
+      currentSelectedCardKey = null;
+    }
+
+    function closeModalOnBackdrop(e) {
+      if (e.target.id === 'cardModal') closeModal();
+    }
+
+    function moveCurrentCard(newStatus) {
+      if (!currentSelectedCardKey) return;
+      const task = tasks.find(t => t['Issue Key'] === currentSelectedCardKey);
+      if (task) {
+        const old = task['Status'];
+        task['Status'] = newStatus;
+        document.getElementById('modalStatus').textContent = newStatus;
+        renderBoard();
+        showToast(`Updated ${task['Issue Key']} to ${newStatus}`);
+      }
+    }
+
+    function showToast(msg) {
+      const t = document.getElementById('toast');
+      t.textContent = msg;
+      t.style.display = 'block';
+      setTimeout(() => { t.style.display = 'none'; }, 3000);
+    }
+
+    function escapeHtml(str) {
+      if (!str) return '';
+      return str.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+    }
+
+    // Event listeners
+    document.getElementById('epicFilter').addEventListener('change', renderBoard);
+    document.getElementById('priorityFilter').addEventListener('change', renderBoard);
+    document.getElementById('moduleFilter').addEventListener('change', renderBoard);
+    document.getElementById('searchInput').addEventListener('input', renderBoard);
+    document.getElementById('resetFilters').addEventListener('click', () => {
+      document.getElementById('epicFilter').value = 'ALL';
+      document.getElementById('priorityFilter').value = 'ALL';
+      document.getElementById('moduleFilter').value = 'ALL';
+      document.getElementById('searchInput').value = '';
+      renderBoard();
+    });
+
+    window.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape') closeModal();
+    });
+
+    // Initial render
+    renderBoard();
+  </script>
+</body>
+</html>

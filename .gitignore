@@ -1,0 +1,10 @@
+# Operating System Files
+.DS_Store
+Thumbs.db
+ehthumbs.db
+
+# Temporary & Cache Files
+*.tmp
+*.bak
+*~
+.cache/
