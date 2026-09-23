@@ -12,6 +12,12 @@ This document provides a comprehensive technical audit and architectural bluepri
 - **Architecture Model:** Clean Architecture / N-Tier Modular Monolith
 - **Target Deployment:** Localized deployment across private residential compounds (e.g., Giza & New Cairo gated communities)
 
+> [!IMPORTANT]
+> ### 📌 Current Development Milestone & Implementation Status (Midterm Milestone)
+> **The TASKA project is currently under active development (Work In Progress):**
+> - **Phase 1 — Frontend Client Applications:** ✅ **COMPLETED** (`taska-resident`, `taska-technician`, `admin-react` are fully designed, developed, and running interactively using the built-in **Offline Sandbox Simulator** for UI validation).
+> - **Phase 2 — Backend Architecture & Services:** 🚧 **IN PROGRESS / SCHEDULED** (The ASP.NET Core 8 Web API, EF Core 8 database schema, and SignalR Hub contracts are fully designed and architected in this document; C# server implementation and database migrations are scheduled for the upcoming development sprints).
+
 ---
 
 ## 2. Solution Structure & Repository Anatomy
@@ -325,7 +331,10 @@ app.MapHub<CompoundHub>("/hubs/compound");
 
 ## 8. Build, Database Migration & Execution Instructions
 
+> **Milestone Note:** The React client applications are currently executable immediately via `npm run dev` and operate in **Client-Side Sandbox Mode** for interactive evaluation. The `.NET 8` backend execution commands below represent the target deployment setup for Phase 2 implementation.
+
 ```bash
+# Phase 2 — Target .NET 8 Backend Launch:
 # 1. Restore dependencies
 dotnet restore
 
@@ -335,8 +344,8 @@ dotnet ef database update
 # 3. Launch .NET 8 Web API & SignalR Hubs
 dotnet run --project taska-api
 
-# 4. Launch Client Applications (separate terminals)
+# Phase 1 — Currently Running Client Applications (Sandbox Demo):
 cd taska-resident   ; npm run dev -- --host --port 5173
 cd taska-technician ; npm run dev -- --host --port 5174
-cd admin-react      ; npm run dev -- --host
+cd admin-react      ; npm run dev -- --host --port 5175
 ```

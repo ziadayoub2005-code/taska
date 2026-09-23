@@ -3,7 +3,7 @@
 **University Engineering Deliverables Submission**  
 **Project:** Taska (Intelligent Compound Maintenance & Home Services Platform)  
 **System Architecture:** Multi-Client Monorepo (.NET 8 ASP.NET Core Web API + SignalR Hubs + 3 React Frontends)  
-**Academic Status:** Final Comprehensive Deliverables Package  
+**Academic Status:** Midterm Milestone Deliverables (Phase 1: Frontend Complete · Phase 2: .NET Backend In Active Development)  
 
 ---
 
