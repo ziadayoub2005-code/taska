@@ -1,34 +1,37 @@
-# TASKA — Project Management Documentation (Midterm Milestone)
+# TASKA — Project Management Documentation (Phased Development Roadmap)
 
 **Project:** TASKA — Intelligent Compound Maintenance & Home Services Platform  
 **Project Key:** `TASKA`  
 **Methodology:** Scrum / Agile Kanban  
 **Platform:** .NET 8.0 (C# 12) Web API + SignalR + React 18/19 Client PWAs  
-**Current Milestone:** Midterm Progress Deliverable (Work In Progress)  
-**Implementation Phase:** **Phase 1: Frontend Clients Completed (57.1%)** · **Phase 2: .NET 8 Backend Under Construction**  
+**Current Milestone:** Midterm Progress Deliverable (In Progress)  
+**Phasing Model:** **System Design & Specs Complete** · **Frontend in Phased Development** · **Backend in Phased Development**  
 
 ---
 
 > [!IMPORTANT]
-> ### 📌 Current Project Status
-> - **Frontend Phase (16 Tasks):** ✅ **COMPLETED & VERIFIED** (`taska-resident`, `taska-technician`, and `admin-react` are fully designed, developed, and operable via **Client-Side Sandbox Simulator** for interactive UI validation and demonstration).
-> - **Backend Phase (12 Tasks):** 🚧 **IN PROGRESS / SCHEDULED** (The ASP.NET Core 8 Web API, EF Core 8 models, and SignalR Hub contracts are architecturally specified; server implementation and database migrations are currently being built).
+> ### 📌 Phased Implementation Roadmap & Current Status
+> - **System Architecture & UI/UX Design:** ✅ **COMPLETED** (SRS, UI/UX flows, wireframes, and database models are fully finalized).
+> - **Frontend Phase 1 (Foundations & Prototypes):** 🔄 **IN PROGRESS** (Navigation, RTL language context, core auth prototypes, and Offline Sandbox simulator).
+> - **Frontend Phase 2 (Marketplace, Bidding & Live GPS):** 📋 **SCHEDULED (To Do)** (Technician bidding marketplace, real-time GPS tracking map, and in-order chat).
+> - **Backend Phase 1 (Architecture & Auth API):** 🔄 **IN PROGRESS** (.NET 8 solution scaffolding, domain entities, and ASP.NET Core JWT Bearer authentication).
+> - **Backend Phase 2 (SignalR & Services):** 📋 **SCHEDULED (To Do)** (SignalR real-time hubs, order workflow state machine, simulated payments, and ratings).
 
 ---
 
-## 1. Workflow
+## 1. Workflow & Kanban Board
 
 ```
-[ Backlog: 3 ] ──► [ To Do: 7 ] ──► [ In Progress: 2 ] ──► [ Testing / QA: 0 ] ──► [ Done: 16 ]
+[ Backlog: 3 ] ──► [ To Do: 13 ] ──► [ In Progress: 6 ] ──► [ Testing / QA: 0 ] ──► [ Done: 6 ]
 ```
 
-| Stage | Description | Count | Focus Areas |
+| Stage | Description | Count | Current Scope |
 | :--- | :--- | :---: | :--- |
-| **Backlog** | Secondary features not yet scheduled for active sprints. | 3 | Audio voice notes, QR gate pass, auto translation seeder. |
-| **To Do** | Backend .NET 8 Web API endpoints & SignalR hubs ready for implementation. | 7 | SignalR OrderHub, payment simulation, categories DB, translation API. |
-| **In Progress** | Core backend architecture actively being developed. | 2 | ASP.NET Core JWT Bearer authentication & sequential state machine validator. |
-| **Testing / QA** | Code complete under verification. | 0 | Reserved for backend services upon sprint delivery. |
-| **Done** | Fully built and verified client applications & workflows. | 16 | All 3 React frontend applications, UI screens, RTL engine, and Offline Sandbox. |
+| **Backlog** | Secondary features not yet scheduled for active sprints. | 3 | Audio voice notes in chat, security gate pass QR generator, automated translation seeder. |
+| **To Do** | Scheduled next-phase features for Frontend & .NET Backend. | 13 | Bidding marketplace, live GPS tracking, SignalR hubs, payment simulation, 5-star ratings. |
+| **In Progress** | Actively being developed in the current sprint. | 6 | .NET JWT Bearer authentication, resident order submission UI, technician duty toggle, support widget. |
+| **Testing / QA** | Verification stage. | 0 | Will receive features upon sprint completion. |
+| **Done** | Verified foundational architecture and initial UI prototypes. | 6 | Compound schema, registration/OTP prototypes, RTL engine, admin dashboard layout, sandbox simulator. |
 
 ---
 
@@ -38,26 +41,20 @@
 
 | Status | Task Count | Percentage | Description |
 | :--- | :---: | :---: | :--- |
-| ✅ **Done (Frontend)** | 16 | 57.1% | Resident portal, technician PWA, admin console, UI flows, and sandbox simulator |
-| 🔄 **In Progress (Backend Core)** | 2 | 7.1% | Core .NET 8 JWT Bearer auth (`TSK-103`) & Order State Machine (`TSK-403`) |
-| 📋 **To Do (Backend APIs & DB)** | 7 | 25.0% | ASP.NET Core Web API endpoints, EF Core database tables, and SignalR hubs |
-| 📦 **Backlog (Future Features)** | 3 | 10.7% | Gate pass QR code, audio chat notes, translation automated seeder |
-| **TOTAL** | **28** | **100.0%** | **Midterm Milestone: Active Work In Progress** |
+| ✅ **Done (Foundations & Design)** | 6 | 21.4% | Initial UI prototypes, layout architecture, and client-side sandbox simulator |
+| 🔄 **In Progress (Active Sprint)** | 6 | 21.4% | Core authentication, order request form, duty toggle, and support widget |
+| 📋 **To Do (Next Phases)** | 13 | 46.4% | Reverse bidding marketplace, GPS tracking, SignalR hubs, payments, and ratings |
+| 📦 **Backlog (Future Enhancements)** | 3 | 10.7% | Advanced features scheduled after core release |
+| **TOTAL** | **28** | **100.0%** | **Phased Implementation in Active Progress** |
 
 ---
 
-## 3. Epics Overview & Midterm Progress
+## 3. Priority Distribution
 
-| Epic ID | Epic Name | Module / Subsystem | Tasks | Status Breakdown |
-| :--- | :--- | :--- | :---: | :--- |
-| **EPC-01** | Role-Based JWT Bearer Authentication & Verification | `taska-api` / `taska-resident` / `taska-technician` | 4 | 3 Done (UI) · 1 In Progress (.NET Auth) |
-| **EPC-02** | Compound & Service Catalog Infrastructure | `taska-api` / `admin-react` | 2 | 1 Done (Admin UI) · 1 To Do (Backend DB) |
-| **EPC-03** | Resident Order Creation & Bidding Marketplace | `taska-api` / `taska-resident` / `taska-technician` | 4 | 3 Done (UI) · 1 To Do (Cancellation API) |
-| **EPC-04** | Technician Operations & Live GPS Tracking | `taska-api` / `taska-technician` | 4 | 3 Done (UI/GPS) · 1 In Progress (Validator) |
-| **EPC-05** | Real-Time SignalR Hubs Infrastructure | `taska-api` / All Clients | 3 | 2 To Do (SignalR API) · 1 Backlog |
-| **EPC-06** | Billing, Simulated Payments & Rating Engine | `taska-api` / `taska-resident` / `admin-react` | 2 | 2 To Do (Backend Payment & Rating) |
-| **EPC-07** | Admin Operations Console & Kanban Dispatch | `admin-react` / `taska-api` | 3 | 3 Done (Admin UI & Live Kanban) |
-| **EPC-08** | In-App Customer Support Helpdesk | `taska-resident` / `admin-react` / `taska-api` | 2 | 2 Done (Resident & Admin Support UI) |
-| **EPC-09** | Dynamic Bilingual Localization (EN/AR) | `taska-api` / All Clients | 3 | 1 Done (RTL Engine) · 1 To Do · 1 Backlog |
-| **EPC-10** | System Resilience & Offline Sandbox Mode | `taska-resident` / `taska-technician` | 1 | 1 Done (Client-Side Simulator) |
-| **TOTAL** | | | **28** | **16 Done · 2 In Progress · 7 To Do · 3 Backlog** |
+| Priority | Task Count | Percentage |
+| :--- | :---: | :---: |
+| 🔴 **Critical** | 9 | 32.1% |
+| 🟠 **High** | 12 | 42.9% |
+| 🟡 **Medium** | 5 | 17.9% |
+| 🟢 **Low** | 2 | 7.1% |
+| **TOTAL** | **28** | **100.0%** |

@@ -1,11 +1,11 @@
 ﻿Epic Key,Epic Name,Module,Priority,Description,Task Count,Done,In Progress,Testing/QA,To Do,Backlog
-EPC-01,Role-Based JWT Bearer Authentication & Verification,taska-api / taska-resident / taska-technician,Critical,Compound-verified resident registration OTP email technician credentials JWT Bearer RBAC,4,3,1,0,0,0
+EPC-01,Role-Based JWT Bearer Authentication & Verification,taska-api / taska-resident / taska-technician,Critical,Compound-verified resident registration OTP email technician credentials JWT Bearer RBAC,4,2,2,0,0,0
 EPC-02,Compound & Service Catalog Infrastructure,taska-api / admin-react,High,EF Core 8 entities gated compound records service categories base fees and icon assignments,2,1,0,0,1,0
-EPC-03,Resident Order Creation & Bidding Marketplace,taska-api / taska-resident,Critical,Maintenance request creation image attachments coordinate selection and reverse bidding,4,3,0,0,1,0
-EPC-04,Technician Operations & Live GPS Tracking,taska-api / taska-technician,Critical,Duty status toggle GPS location streaming and step-by-step order progression,4,2,1,0,0,1
+EPC-03,Resident Order Creation & Bidding Marketplace,taska-api / taska-resident,Critical,Maintenance request creation image attachments coordinate selection and reverse bidding,4,0,1,0,3,0
+EPC-04,Technician Operations & Live GPS Tracking,taska-api / taska-technician,Critical,Duty status toggle GPS location streaming and step-by-step order progression,4,0,1,0,2,1
 EPC-05,Real-Time SignalR Hubs Infrastructure,taska-api / All Clients,Critical,ASP.NET Core SignalR Hubs OrderHub LocationHub SupportHub CompoundHub status events and chat,3,0,0,0,2,1
 EPC-06,Billing Simulated Payments & Rating Engine,taska-api / taska-resident / admin-react,High,Cash/Visa payment processing automated technician rating aggregation and refund audit,2,0,0,0,2,0
-EPC-07,Admin Operations Console & Kanban Dispatch,admin-react / taska-api,High,Executive KPI dashboard Recharts analytics drag-and-drop live Kanban board user administration,3,3,0,0,0,0
-EPC-08,In-App Customer Support Helpdesk,taska-api / taska-resident / admin-react,High,Dedicated support chat widget admin dispatch desk and ticket resolution rating,2,2,0,0,0,0
+EPC-07,Admin Operations Console & Kanban Dispatch,admin-react / taska-api,High,Executive KPI dashboard Recharts analytics drag-and-drop live Kanban board user administration,3,1,1,0,1,0
+EPC-08,In-App Customer Support Helpdesk,taska-api / taska-resident / admin-react,High,Dedicated support chat widget admin dispatch desk and ticket resolution rating,2,0,1,0,1,0
 EPC-09,Dynamic Bilingual Localization (EN/AR),taska-api / All Clients,High,Database-driven key-value translations RTL layout flip and user language persistence,3,1,0,0,1,1
 EPC-10,System Resilience & Offline Sandbox Mode,taska-resident / taska-technician,Medium,Automatic API health check and localStorage sandbox simulator for reliable offline demos,1,1,0,0,0,0
