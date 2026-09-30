@@ -46,6 +46,7 @@ documentation/
 - **Covers:** Formal 18-section specification detailing Introduction, Stakeholders, Roles Matrix, Functional Requirements (`FR-AUTH`, `FR-ORD`, `FR-TRACK`, `FR-MSG`, `FR-PAY`, `FR-RATE`, `FR-ADM`, `FR-SUPP`), Non-Functional Requirements, System Architecture, Database Schema with Entity-Relationship diagrams, API Endpoints, Business Rules, User Stories, Use Case Diagrams, and Future Improvements.
 
 ### 4. UI/UX Interaction & Information Architecture
+- **Master UI/UX Screenshots Dossier (PDF):** [Taska_Complete_UI-UX_Screenshots.pdf](Taska_Complete_UI-UX_Screenshots.pdf) — Complete 41-page high-resolution dossier featuring the .NET 8 backend blueprint & 39 real Retina 2x screenshots across all 3 portals.
 - **UI/UX Specification:** [UI-UX.md](UI-UX/UI-UX.md)
 - **User Flows & Journeys:** [User-Flows.md](UI-UX/User-Flows.md)
 - **System Sitemap:** [Sitemap.md](UI-UX/Sitemap.md)

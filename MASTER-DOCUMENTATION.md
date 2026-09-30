@@ -100,6 +100,7 @@ project/
 
 ## 4. Deliverable 4: UI/UX Documentation
 
+- **Master UI/UX Screenshots Dossier (PDF):** [`Taska_Complete_UI-UX_Screenshots.pdf`](Taska_Complete_UI-UX_Screenshots.pdf) (Complete 41-page Retina 2x capture + .NET 8 Architecture Blueprint)
 - **Visual Design & Screen Specifications:** [`documentation/UI-UX/UI-UX.md`](documentation/UI-UX/UI-UX.md)
 - **User Interaction Flows & Journey Maps:** [`documentation/UI-UX/User-Flows.md`](documentation/UI-UX/User-Flows.md)
 - **Information Architecture & Sitemap:** [`documentation/UI-UX/Sitemap.md`](documentation/UI-UX/Sitemap.md)
