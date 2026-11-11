@@ -10,22 +10,25 @@ This directory houses all engineering specifications, system architecture docume
 
 ```
 documentation/
-├── README.md                                    # Central documentation index (this file)
+├── README.md                                                      # Central documentation index (this file)
 │
-├── SRS/                                         # Deliverable 3: Software Requirements Specification
-│   └── SRS.md                                   # Full academic IEEE/ISO-style SRS document
+├── SRS/                                                           # Deliverable 3: Software Requirements Specification (MVP)
+│   └── Technician-Services-Platform-SRS-MVP.pdf                   # MVP SRS specification (42 active FRs, BRs, NFRs, Open Questions)
 │
-├── UI-UX/                                       # Deliverable 4: UI/UX Design & Architecture
-│   ├── UI-UX.md                                 # Design tokens, color system, component catalog, screen specs
-│   ├── User-Flows.md                            # Complete sequence & interaction journey maps
-│   └── Sitemap.md                               # Information architecture & route mapping
+├── Classes/                                                       # Domain Model & Class Specifications
+│   └── Technician-Services-Platform-Classes-Specifications.pdf    # 13 MVP classes, enums, attributes, relationships, FR/BR mapping
 │
-├── Project-Management/                          # Deliverable 2: Agile Project Management (Jira / Trello)
-│   ├── Trello-Jira-Backlog.md                   # Epics, User Stories, Acceptance Criteria, Kanban Board
-│   └── tasks.csv                                # Direct importable CSV for Jira / Trello / Linear
+├── UI-UX/                                                         # Deliverable 4: UI/UX Design & Architecture
+│   ├── UI-UX.md                                                   # Design tokens, color system, component catalog, screen specs
+│   ├── User-Flows.md                                              # Complete sequence & interaction journey maps
+│   └── Sitemap.md                                                 # Information architecture & route mapping
 │
-└── Repository/                                  # Deliverable 1: Repository Technical Documentation
-    └── Repository-Documentation.md              # Codebase anatomy, environment, APIs, WebSockets, DB schema
+├── Project-Management/                                            # Deliverable 2: Agile Project Management (Jira / Trello)
+│   ├── Trello-Jira-Backlog.md                                     # Epics, User Stories, Acceptance Criteria, Kanban Board
+│   └── tasks.csv                                                  # Direct importable CSV for Jira / Trello / Linear
+│
+└── Repository/                                                    # Deliverable 1: Repository Technical Documentation
+    └── Repository-Documentation.md                                # Codebase anatomy, environment, APIs, WebSockets, DB schema
 ```
 
 ---
@@ -41,9 +44,10 @@ documentation/
 - **CSV Data File:** [tasks.csv](Project-Management/tasks.csv)
 - **Covers:** 10 core engineering Epics (`EPC-01` to `EPC-10`), granular user stories and technical tasks, acceptance criteria, dependencies, priority classifications, and Kanban lifecycle distribution (`Backlog`, `To Do`, `In Progress`, `Testing / QA`, `Done`).
 
-### 3. Software Requirements Specification (SRS)
-- **Location:** [SRS.md](SRS/SRS.md)
-- **Covers:** Formal 18-section specification detailing Introduction, Stakeholders, Roles Matrix, Functional Requirements (`FR-AUTH`, `FR-ORD`, `FR-TRACK`, `FR-MSG`, `FR-PAY`, `FR-RATE`, `FR-ADM`, `FR-SUPP`), Non-Functional Requirements, System Architecture, Database Schema with Entity-Relationship diagrams, API Endpoints, Business Rules, User Stories, Use Case Diagrams, and Future Improvements.
+### 3. Software Requirements Specification (SRS) & Classes Specifications
+- **SRS Location (PDF):** [Technician-Services-Platform-SRS-MVP.pdf](SRS/Technician-Services-Platform-SRS-MVP.pdf)
+- **Classes Specifications (PDF):** [Technician-Services-Platform-Classes-Specifications.pdf](Classes/Technician-Services-Platform-Classes-Specifications.pdf)
+- **Covers:** MVP vs. Later scope, Actors (`Guest`, `Customer`, `Technician`, `Admin`), 42 active Functional Requirements (`FR-01` to `FR-43`, `FR-15` removed), Business Rules (`BR-01` to `BR-18`, `BR-06` removed), Non-Functional Requirements (`NFR-01` to `NFR-07` — ASP.NET Core MVC on .NET 8, N-Tier EF Core Code First, SQL Server, ASP.NET Core Identity), Out of Scope & Open Questions (`OQ-01` to `OQ-16`), and complete domain model specifications for the 13 MVP classes and 7 enums.
 
 ### 4. UI/UX Interaction & Information Architecture
 - **Master UI/UX Screenshots Dossier (PDF):** [Taska_Complete_UI-UX_Screenshots.pdf](Taska_Complete_UI-UX_Screenshots.pdf) — Complete 41-page high-resolution dossier featuring the .NET 8 backend blueprint & 39 real Retina 2x screenshots across all 3 portals.

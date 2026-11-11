@@ -23,7 +23,9 @@ project/
     │   ├── Trello-Jira-Backlog.md                             ← DELIVERABLE 2 (Documentation)
     │   └── tasks.csv                                          ← DELIVERABLE 2 (CSV Import File)
     ├── SRS/
-    │   └── SRS.md                                             ← DELIVERABLE 3
+    │   └── Technician-Services-Platform-SRS-MVP.pdf           ← DELIVERABLE 3 (SRS MVP)
+    ├── Classes/
+    │   └── Technician-Services-Platform-Classes-Specifications.pdf ← DELIVERABLE 3 (13 MVP Classes)
     └── UI-UX/
         ├── UI-UX.md                                           ← DELIVERABLE 4 (Design & Specs)
         ├── User-Flows.md                                      ← DELIVERABLE 4 (User Flows & Journeys)
@@ -73,28 +75,23 @@ project/
 
 ---
 
-## 3. Deliverable 3: Software Requirements Specification (SRS)
+## 3. Deliverable 3: Software Requirements Specification (SRS) & Classes Specifications
 
-- **Official SRS Document:** [`documentation/SRS/SRS.md`](documentation/SRS/SRS.md)
+- **Official SRS Document (MVP):** [`SRS/Technician-Services-Platform-SRS-MVP.pdf`](SRS/Technician-Services-Platform-SRS-MVP.pdf)
+- **Classes Specifications Document:** [`Classes/Technician-Services-Platform-Classes-Specifications.pdf`](Classes/Technician-Services-Platform-Classes-Specifications.pdf)
 
 ### Key Content Covered:
-- Formal 18-section specification adhering to international software engineering standards.
-- System Overview, Stakeholder Analysis, and Role-Based Permissions Matrix (Resident vs Technician vs Administrator).
-- **Functional Requirements:**
-  - `FR-AUTH-01` to `03`: Resident compound registration, 6-digit email OTP verification, technician multi-identifier login.
-  - `FR-ORD-01` to `04`: Order creation with active-order mutex, photo upload, coordinate selection, reverse bidding, bid acceptance, direct acceptance.
-  - `FR-TRACK-01` to `03`: Online/offline duty toggle, GPS geolocation streaming (`watchPosition`), movement logging, order state transitions.
-  - `FR-MSG-01`: In-order real-time chat between resident and technician.
-  - `FR-SUPP-01`: In-app customer support widget, admin dispatch, and resolution satisfaction rating.
-  - `FR-PAY-01`: Automated invoice creation, simulated Cash and Visa payment processing.
-  - `FR-RATE-01`: 5-star customer review system with automatic technician average rating recalculation.
-  - `FR-ADM-01`: Real-time drag-and-drop orders Kanban board.
-- **Non-Functional Requirements:** Performance, Security (JWT Bearer role policies, BCrypt password hashing, SignalR connection handshake authorization), Reliability (EF Core database execution transactions, offline sandbox fallback), Scalability, Usability (bilingual RTL/LTR layout).
-- **System Architecture & Data Persistence:** Layered architecture diagram, Entity-Relationship diagram, comprehensive data dictionary for all 15 models/tables.
-- **Interface Contracts:** Complete API endpoint documentation across public, resident, technician, and admin routes.
-- **Business Rules (BR-01 to BR-08):** Formal rule constraints strictly extracted from code.
-- **Use Cases & User Stories:** Complete Mermaid use case diagrams and detailed interaction scenarios.
-- **Future Improvements:** Gate pass QR codes, audio voice clips in chat, payment gateway webhooks.
+- **MVP vs. Later Scope:** Defines the 3-week end-to-end Customer → Technician → Admin cycle (with simulated online payment page) vs. deferred features (real payment gateway, recorded voice calls, Google Maps API, SaaS multi-company accounts, subscriptions, advanced analytics).
+- **Actors:** `Guest`, `Customer`, `Technician` (independent provider with one specialty), and `Admin` (supports multiple admin accounts).
+- **Functional Requirements (42 active MVP requirements, `FR-01` to `FR-43` with `FR-15` removed):**
+  - `FR-01` to `FR-07`: Accounts & access (email/phone registration, email OTP verification, login/logout, guest redirect, Arabic/English UI switch).
+  - `FR-08` to `FR-17`: Independent technician profile, work location, services & prices, portfolio photos, working hours, National ID & certificate upload, account review status (`Pending`, `Approved`, `Rejected`, `Suspended`), basic-data edit review flow, and post-rejection re-application.
+  - `FR-18` to `FR-25`: Customer category & location selection, nearest approved technicians search, profile viewing, request submission, request listing, cancellation, 1–5 star rating, and complaints.
+  - `FR-26` to `FR-32`: Technician job handling (accept/reject, start, complete with final price, cancel, complaints) and in-request text chat.
+  - `FR-33` to `FR-43`: Admin review & operations (approve/reject/suspend/reactivate technicians, categories, customers, requests, reviews, complaints with action taken, statistics, multiple admins) and cash / simulated online payment recording.
+- **Business Rules (`BR-01` to `BR-18`, with `BR-06` removed):** Enforces OTP verification, approval gates, one specialty per technician, basic-data edit hold (`ProfileEditRequest`), straight-line distance sorting, request state transitions, technician post-Pending cancellation counter, single post-completion review, and simulated payment handling.
+- **Non-Functional Requirements (`NFR-01` to `NFR-07`):** ASP.NET Core MVC on .NET 8 with SQL Server, N-Tier layers with Entity Framework Core Code First, ASP.NET Core Identity (cookie-based auth & hashed passwords), role-based access control, Arabic RTL / English localization, and browser geolocation with zero paid external API dependencies.
+- **13 MVP Classes & 7 Enums:** Full attribute, validation, relationship, and FR/BR traceability specifications (`User`, `ServiceCategory`, `TechnicianProfile`, `ProfileEditRequest`, `TechnicianDocument`, `TechnicianService`, `PortfolioPhoto`, `WorkingHour`, `ServiceRequest`, `Review`, `Payment`, `Complaint`, `ChatMessage`) plus provisional open-question (`OQ-01` to `OQ-16`) notes.
 
 ---
 
