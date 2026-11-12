@@ -1,5 +1,0 @@
-<Solution>
-  <Project Path="TechnicianPlatform.BLL/TechnicianPlatform.BLL.csproj" />
-  <Project Path="TechnicianPlatform.DAL/TechnicianPlatform.DAL.csproj" />
-  <Project Path="TechnicianPlatform/TechnicianPlatform.csproj" />
-</Solution>
