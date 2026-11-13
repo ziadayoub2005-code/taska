@@ -1,0 +1,268 @@
+﻿@model TechnicianPlatform.Models.ViewModels.TechnicianFilterViewModel
+
+@{
+    ViewData["Title"] = "Find Technicians";
+}
+
+<div class="container mt-4 mb-5">
+
+    <h2 class="mb-4">Find Technicians</h2>
+
+    <!-- FILTER AND SEARCH -->
+    <div class="card shadow-sm mb-4">
+        <div class="card-body">
+
+            <form asp-controller="Technician"
+                  asp-action="Index"
+                  method="get">
+
+                <!-- Reset page to 1 whenever filters or search change -->
+                <input type="hidden" name="Page" value="1" />
+
+                <div class="row g-3">
+
+                    <div class="col-md-4">
+                        <label for="CategoryId" class="form-label">
+                            Service Category
+                        </label>
+
+                        <select id="CategoryId"
+                                name="CategoryId"
+                                class="form-select">
+
+                            <option value="">All Categories</option>
+
+                            @foreach (var category in Model.Categories)
+                            {
+                                <option value="@category.Value"
+                                        selected="@(category.Value == Model.CategoryId?.ToString())">
+                                    @category.Text
+                                </option>
+                            }
+                        </select>
+                    </div>
+
+                    <div class="col-md-4">
+                        <label for="SearchTerm" class="form-label">
+                            Search
+                        </label>
+
+                        <input type="text"
+                               id="SearchTerm"
+                               name="SearchTerm"
+                               value="@Model.SearchTerm"
+                               class="form-control"
+                               placeholder="Technician or service name" />
+                    </div>
+
+                    <div class="col-md-2">
+                        <label for="Latitude" class="form-label">
+                            Latitude
+                        </label>
+
+                        <input type="number"
+                               step="any"
+                               id="Latitude"
+                               name="Latitude"
+                               value="@Model.Latitude"
+                               class="form-control" />
+                    </div>
+
+                    <div class="col-md-2">
+                        <label for="Longitude" class="form-label">
+                            Longitude
+                        </label>
+
+                        <input type="number"
+                               step="any"
+                               id="Longitude"
+                               name="Longitude"
+                               value="@Model.Longitude"
+                               class="form-control" />
+                    </div>
+
+                    <div class="col-12 d-flex gap-2">
+                        <button type="submit" class="btn btn-primary">
+                            Apply Filters
+                        </button>
+
+                        <a asp-controller="Technician"
+                           asp-action="Index"
+                           class="btn btn-outline-secondary">
+                            Clear Filters
+                        </a>
+
+                        <button type="button"
+                                class="btn btn-outline-success"
+                                onclick="getUserLocation()">
+                            Use My Location
+                        </button>
+                    </div>
+
+                </div>
+            </form>
+
+        </div>
+    </div>
+
+    <!-- RESULTS COUNT -->
+    <div class="mb-3">
+        <h5>
+            Search Results
+            <span class="text-muted">
+                (@Model.TotalCount technicians)
+            </span>
+        </h5>
+    </div>
+
+    <!-- TECHNICIAN RESULTS -->
+    @if (Model.Technicians.Any())
+    {
+        <div class="row g-3">
+
+            @foreach (var technician in Model.Technicians)
+            {
+                <div class="col-md-6 col-lg-4">
+
+                    <div class="card h-100 shadow-sm">
+
+                        <div class="card-body">
+
+                            <h5 class="card-title">
+                                @technician.DisplayName
+                            </h5>
+
+                            <p class="mb-2">
+                                <strong>Category:</strong>
+                                @technician.CategoryName
+                            </p>
+
+                            <p class="mb-2">
+                                <strong>Work Area:</strong>
+                                @technician.WorkArea
+                            </p>
+
+                            <p class="mb-2">
+                                <strong>Phone:</strong>
+                                @technician.ContactPhone
+                            </p>
+
+                            <p class="mb-2">
+                                <strong>Services:</strong>
+                                @if (technician.Services.Any())
+                                {
+                                    @string.Join(", ", technician.Services)
+                                }
+                                else
+                                {
+                                    <span>No services listed</span>
+                                }
+                            </p>
+
+                            @if (technician.DistanceKm.HasValue)
+                            {
+                                <p class="mb-0">
+                                    <strong>Distance:</strong>
+                                    @technician.DistanceKm.Value.ToString("0.00") km
+                                </p>
+                            }
+
+                        </div>
+
+                    </div>
+
+                </div>
+            }
+
+        </div>
+    }
+    else
+    {
+        <div class="alert alert-info mt-3">
+            No technicians found matching your search criteria.
+            Try changing the category or search term.
+        </div>
+    }
+
+    <!-- PAGINATION -->
+    @if (Model.TotalPages > 1)
+    {
+        <nav class="mt-4" aria-label="Technician pages">
+
+            <ul class="pagination justify-content-center">
+
+                <li class="page-item @(Model.Page <= 1 ? "disabled" : "")">
+
+                    <a class="page-link"
+                       asp-action="Index"
+                       asp-route-CategoryId="@Model.CategoryId"
+                       asp-route-SearchTerm="@Model.SearchTerm"
+                       asp-route-Latitude="@Model.Latitude"
+                       asp-route-Longitude="@Model.Longitude"
+                       asp-route-Page="@(Model.Page - 1)">
+                        Previous
+                    </a>
+
+                </li>
+
+                @for (int pageNumber = 1;
+                      pageNumber <= Model.TotalPages;
+                      pageNumber++)
+                {
+                    <li class="page-item @(pageNumber == Model.Page ? "active" : "")">
+
+                        <a class="page-link"
+                           asp-action="Index"
+                           asp-route-CategoryId="@Model.CategoryId"
+                           asp-route-SearchTerm="@Model.SearchTerm"
+                           asp-route-Latitude="@Model.Latitude"
+                           asp-route-Longitude="@Model.Longitude"
+                           asp-route-Page="@pageNumber">
+                            @pageNumber
+                        </a>
+
+                    </li>
+                }
+
+                <li class="page-item @(Model.Page >= Model.TotalPages ? "disabled" : "")">
+
+                    <a class="page-link"
+                       asp-action="Index"
+                       asp-route-CategoryId="@Model.CategoryId"
+                       asp-route-SearchTerm="@Model.SearchTerm"
+                       asp-route-Latitude="@Model.Latitude"
+                       asp-route-Longitude="@Model.Longitude"
+                       asp-route-Page="@(Model.Page + 1)">
+                        Next
+                    </a>
+
+                </li>
+
+            </ul>
+
+        </nav>
+    }
+
+</div>
+
+<script>
+    function getUserLocation() {
+        if (!navigator.geolocation) {
+            alert("Your browser does not support location services.");
+            return;
+        }
+
+        navigator.geolocation.getCurrentPosition(
+            function (position) {
+                document.getElementById("Latitude").value =
+                    position.coords.latitude;
+
+                document.getElementById("Longitude").value =
+                    position.coords.longitude;
+            },
+            function () {
+                alert("Unable to get your location. Please allow location access.");
+            }
+        );
+    }
+</script>

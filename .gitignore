@@ -8,3 +8,6 @@ ehthumbs.db
 *.bak
 *~
 .cache/
+.vs/
+**/bin/
+**/obj/
